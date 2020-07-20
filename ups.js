@@ -29,7 +29,61 @@ window.moduleUps = window.moduleUps || (function() {
 		},
 
 		cssClasses: {
+			container: 'ups',
 			containerUpsDiconnected: 'ups--disconnected',
+		},
+
+		flagOptions: {
+			comlost: {
+				title: "Нет сигнала",
+				tags: ["comlost", "alert"],
+			},
+			online: {
+				title: "Сеть",
+				tags: ["online"],
+				containerTags: ["online"],
+			},
+			onbatt: {
+				title: "На батарее",
+				tags: ["onbatt", "warn"],
+				containerTags: ["onbatt", "alert"],
+			},
+			off: {
+				title: "Выключен",
+				tags: ["off", "warn"],
+			},
+			calibration: {
+				title: "Калибровка",
+				tags: ["calibration"],
+			},
+			trim: {
+				title: "Повышенное напр.",
+				tags: ["trim", "warn"],
+			},
+			boost: {
+				title: "Пониженное напр.",
+				tags: ["boost", "warn"],
+			},
+			overload: {
+				title: "Перегрузка",
+				tags: ["overload", "alert"],
+			},
+			battlow: {
+				title: "Низкий заряд",
+				tags: ["battlow", "lowbatt", "alert"],
+			},
+			replacebatt: {
+				title: "Замените батарею",
+				tags: ["replacebatt", "warn"],
+			},
+			nobatt: {
+				title: "Батарея отключена",
+				tags: ["nobatt", "alert"],
+			},
+			shutdown: {
+				title: "Отключение…",
+				tags: ["shutdown", "alert"],
+			},
 		},
 
 		render: {
@@ -51,7 +105,7 @@ window.moduleUps = window.moduleUps || (function() {
 				`;
 			},
 			statusFlag: (title, tags = []) => {
-				let cl = tags.map(tag => "ups__status-flag--" + tag).join(" ");
+				let cl = (tags || []).map(tag => "ups__status-flag--" + tag).join(" ");
 				return `<span class="ups__status-flag ${cl}">${title}</span>`;
 			},
 			decimal: (num) => {
@@ -174,16 +228,14 @@ window.moduleUps = window.moduleUps || (function() {
 	const flagBattpresent = 0x04000000; // Indicates if battery is connected
 
 	const flagShutdown = 0x00000200;
-	const flagShut_load = 0x00080000;
-	const flagShut_btime = 0x00100000;
-	const flagShut_ltime = 0x00200000;
-	const flagShut_emerg = 0x00400000;
+
 
 	function extendOptsWith(customOpts) {
 		var opts = Object.assign({}, defaultOpts, customOpts);
 		opts.render = Object.assign({}, defaultOpts.render, customOpts.render || {});
 		return opts;
 	};
+	
 	
 	module.initWidget = function(elem, customOpts) {
 		const widget = {};
@@ -309,66 +361,53 @@ window.moduleUps = window.moduleUps || (function() {
 			}
 		};
 	
-		widget.updateStatus = function(flags) {
+		widget.updateStatus = function(flags) {			
+			let flagOptions = opts.flagOptions;
 			let $flags = $cont.find('.ups__status');
 			$flags.empty();
-			
-			$cont.removeClass("ups--online");
-			$cont.removeClass("ups--warn");
-			$cont.removeClass("ups--alert");
-	
+
+			const contTagToClass = tag => opts.cssClasses.container + "--" + tag;
+
+			const appendFlags = (flags) => {
+				flags.filter(([flag, ok]) => !!ok).forEach(([flag, ok]) => {
+					let flagOpt = flag in flagOptions ? flagOptions[flag] : {};
+					$flags.append(render.statusFlag(flagOpt.title || flag, flagOpt.tags));
+
+					if (flagOpt.containerTags) {
+						flagOpt.containerTags.filter(contTag => !!contTag).forEach(contTag => {
+							$cont.addClass(contTagToClass(contTag));
+						});
+					}
+				});
+			};
+
+			// remove old flag tags from container
+			for (flag in flagOptions) {
+				let flagOpt = flagOptions[flag];
+				let contTags = flagOpt.containerTags || [];
+				contTags.forEach(contTag => {
+					$cont.removeClass(contTagToClass(contTag));
+				});
+			}
+
 			if (flags & flagCommlost) {
-				$flags.append(render.statusFlag("Нет сигнала", ["comlost", "alert"]));
+				appendFlags([ ["comlost", true] ]);
 				return;
 			}
-			if (flags & flagOnline) {
-				$cont.addClass("ups--online");
-				$flags.append(render.statusFlag("Сеть", ["online"]));
-			}
-			if (flags & flagOnbatt) {
-				$cont.addClass("ups--alert");
-				$flags.append(render.statusFlag("На батарее", ["onbatt", "warn"]));
-			}
-			if ((flags & flagPlugged) && (flags & flagOnline) == 0 && (flags & flagOnbatt) == 0) {
-				$flags.append(render.statusFlag("Выключен", ["off", "warn"]));
-			}
-			if (flags & flagCalibration) {
-				$flags.append(render.statusFlag("Калибровка", ["cal"]));
-			}
-			if (flags & flagTrim) {
-				$flags.append(render.statusFlag("Высокое напряжение", ["trim", "warn"]));
-			}
-			if (flags & flagBoost) {
-				$flags.append(render.statusFlag("Низкое напряжение", ["boost", "warn"]));
-			}
-			if (flags & flagOverload) {
-				$flags.append(render.statusFlag("Перегрузка", ["overload", "alert"]));
-			}
-			if (flags & flagBattlow) {
-				$flags.append(render.statusFlag("Батарея разряжена", ["lowbatt", "alert"]));
-			}
-			if (flags & flagReplacebatt) {
-				$flags.append(render.statusFlag("Замените батарею", ["replacebatt", "warn"]));
-			}
-			if ((flags & flagBattpresent) == 0) {
-				$flags.append(render.statusFlag("Батарея отключена", ["nobatt", "alert"]));
-			}
-	
-			if (flags & flagShutdown) {
-				$flags.append(render.statusFlag("shutdown"));
-			}
-			if (flags & flagShut_load) {
-				$flags.append(render.statusFlag("shut_load"));
-			}
-			if (flags & flagShut_btime) {
-				$flags.append(render.statusFlag("shut_btime"));
-			}
-			if (flags & flagShut_ltime) {
-				$flags.append(render.statusFlag("shut_ltime"));
-			}
-			if (flags & flagShut_emerg) {
-				$flags.append(render.statusFlag("shut_emerg"));
-			}
+
+			appendFlags([
+				["online", flags & flagOnline],
+				["onbatt", flags & flagOnbatt],
+				["off", (flags & flagPlugged) && (flags & flagOnline) == 0 && (flags & flagOnbatt) == 0],
+				["calibration", flags & flagCalibration],
+				["trim", flags & flagTrim],
+				["boost", flags & flagBoost],
+				["overload", flags & flagOverload],
+				["battlow", flags & flagBattlow],
+				["replacebatt", flags & flagReplacebatt],
+				["nobatt", (flags & flagBattpresent) == 0],
+				["shutdown", flags & flagShutdown],
+			]);
 		};
 		
 		widget.updateEvents = function(events = [], resetEvents = false, forceUpdate = false) {
