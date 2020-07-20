@@ -102,8 +102,90 @@ window.moduleUps = window.moduleUps || (function() {
 	const flagShut_btime = 0x00100000;
 	const flagShut_ltime = 0x00200000;
 	const flagShut_emerg = 0x00400000;
+
+	function renderEvent(ts, text) {
+		let now = new Date();
+		let d = new Date(ts);
+		let deltaSec = 0.001 * (now.getTime() - d.getTime());
+		let extraClass = '';
+		if (deltaSec < 3600) {
+			extraClass = 'ups__event--new';
+		} else if (deltaSec > 24 * 3600) {
+			extraClass = 'ups__event--old';
+		}
+		return `
+			<div class="ups__event ${extraClass}">
+				<span class="ups__event-date">${renderTs(ts)}</span>
+				<div class="ups__event-content">${text.replace("\n", "<br/>")}</div>
+			</div>
+		`;
+	}
+
+	function renderStatusFlag(title, tags = []) {
+		let cl = tags.map(tag => "ups__status-flag--" + tag).join(" ");
+		return `<span class="ups__status-flag ${cl}">${title}</span>`;
+	}
+
+	function renderDecimal(val) {
+		let s = (10 * val).toFixed(0);
+		if (s == "0") {
+			return s;
+		}
+		let intPart = s.slice(0, -1);
+		let decimalPart = s.slice(-1);
+		if (decimalPart == "0") {
+			return intPart;
+		}
+		return intPart + "<small>" + "." + decimalPart + "</small>";
+	}
+	
+	function renderSeconds(sec) {
+		let d = new Date(sec * 1000);
+		let h = d.getUTCHours();
+		let m = d.getUTCMinutes();
+		let s = d.getUTCSeconds();
+		let parts = [];
+		if (h > 0) {
+			parts.push(h + ' ч');
+		}
+		if (m > 0 || s == 0) {
+			parts.push(('00' + m).slice(-2) + ' мин');
+		}
+		if (s > 0) {
+			parts.push(('00' + s).slice(-2) + ' сек');
+		}
+		return parts.join(' ');
+	}
+
+	function renderTs(ts) {
+		let d = new Date(ts);
+		if (d.getTime() < 7 * 24 * 3600 * 1000) {
+			return "—";
+		}
+		let hh = ('00' + d.getHours()).slice(-2);
+		let mm = ('00' + d.getMinutes()).slice(-2);
+		let ss = ('00' + d.getSeconds()).slice(-2);
+		const months = {
+			0: "янв",
+			1: "фев",
+			2: "мар",
+			3: "апр",
+			4: "май",
+			5: "июн",
+			6: "июл",
+			7: "авг",
+			8: "сен",
+			9: "окт",
+			10: "ноя",
+			11: "дек",
+		};
+		return `${d.getDate()} ${months[d.getMonth()]} ${hh}:${mm}`;
+		//return `${d.getDate()} ${months[d.getMonth()]} ${hh}:${mm}:${ss}`;
+	}
 	
 	module.initWidget = function(elem, customOpts) {
+		const widget = {};
+
 		var opts = defaultOpts;
 		opts = Object.assign({}, defaultOpts, customOpts);
 		
@@ -111,9 +193,7 @@ window.moduleUps = window.moduleUps || (function() {
 		const $cont = $(elem);
 		var currentWs = null;
 
-		initWebsocket();
-
-		function initWebsocket() {
+		widget.initWebsocket = function() {
 			if (currentWs) {
 				currentWs.close();
 			}
@@ -131,7 +211,7 @@ window.moduleUps = window.moduleUps || (function() {
 					console.log('onDiconnect');
 
 					currentWs = null;
-					handleSignal("disconnect");
+					widget.handleSignal("disconnect");
 				},
 				onData: function(jsonStr) {
 					console.log("onData", jsonStr);
@@ -144,8 +224,8 @@ window.moduleUps = window.moduleUps || (function() {
 						case 'init': 
 							state = data.model_state || {};
 							events = data.model_events || [];
-							updateState(state);
-							updateEvents(events, true);
+							widget.updateState(state);
+							widget.updateEvents(events, true);
 							break;
 
 						case 'change': 
@@ -154,13 +234,13 @@ window.moduleUps = window.moduleUps || (function() {
 								state[k] = diff[k][1];
 							}
 							events = data.model_events_new || [];
-							updateState(state);
-							updateEvents(events);
+							widget.updateState(state);
+							widget.updateEvents(events);
 							break;
 						
 						case 'signal': 
-							handleSignal(data.signal);
-							updateEvents([], false, false);
+							widget.handleSignal(data.signal);
+							widget.updateEvents([], false, false);
 							break;
 						
 						default: break;
@@ -175,22 +255,22 @@ window.moduleUps = window.moduleUps || (function() {
 			}, opts.reInitInterval);
 		}
 
-		function updateState(state) {
+		widget.updateState = function(state) {
 			console.log('updateState', state);
 			
 			if (state.UpsStatus) {
 				if (state.UpsStatus.Flag != null) {
-					updateStatusFlags(state.UpsStatus.Flag);
+					widget.updateStatus(state.UpsStatus.Flag);
 				}
 			}
 			if (state.BatteryCharge != null) {
 				$cont.find('.js-ups-battery-charge').text(state.BatteryCharge);
 			}
 			if (state.UpsTimeleftSeconds != null) {
-				$cont.find('.js-ups-battery-timeleft').text(formatSeconds(state.UpsTimeleftSeconds, false));
+				$cont.find('.js-ups-battery-timeleft').text(renderSeconds(state.UpsTimeleftSeconds));
 			}
 			if (state.InputVoltage != null) {
-				$cont.find('.js-ups-input-voltage').html(getHtmlDecimal(state.InputVoltage));
+				$cont.find('.js-ups-input-voltage').html(renderDecimal(state.InputVoltage));
 			}
 			if (state.InputVoltageMin != null) {
 				$cont.find('.js-ups-input-voltage-min').html(Math.round(state.InputVoltageMin));
@@ -199,16 +279,16 @@ window.moduleUps = window.moduleUps || (function() {
 				$cont.find('.js-ups-input-voltage-max').html(Math.round(state.InputVoltageMax));
 			}
 			if (state.OutputVoltage != null) {
-				$cont.find('.js-ups-output-voltage').html(getHtmlDecimal(state.OutputVoltage));
+				$cont.find('.js-ups-output-voltage').html(renderDecimal(state.OutputVoltage));
 			}
 			if (state.OutputLoad != null) {
-				$cont.find('.js-ups-output-load').html(getHtmlDecimal(state.OutputLoad));
+				$cont.find('.js-ups-output-load').html(renderDecimal(state.OutputLoad));
 			}
 			if (state.UpsTempInternal != null) {
-				$cont.find('.js-ups-temp').html(getHtmlDecimal(state.UpsTempInternal));
+				$cont.find('.js-ups-temp').html(renderDecimal(state.UpsTempInternal));
 			}
 			if (state.UpsTransferOnBatteryDate) {
-				$cont.find('.js-ups-onbattery-date').text(formatTsHuman(state.UpsTransferOnBatteryDate, false));
+				$cont.find('.js-ups-onbattery-date').text(renderTs(state.UpsTransferOnBatteryDate));
 			}
 			if (state.UpsTransferOnBatteryReason) {
 				$cont.find('.js-ups-onbattery-reason').text(
@@ -217,14 +297,76 @@ window.moduleUps = window.moduleUps || (function() {
 			}
 			if (state.UpsOnBatterySeconds != null) {
 				if (state.UpsOnBatterySeconds > 0) {
-					$cont.find('.js-ups-onbattery-time').text(formatSeconds(state.UpsOnBatterySeconds, true));
+					$cont.find('.js-ups-onbattery-time').text(renderSeconds(state.UpsOnBatterySeconds));
 				} else {
 					$cont.find('.js-ups-onbattery-time').text("—");
 				}
 			}
-		}
+		};
 	
-		function updateEvents(events = [], resetEvents = false, forceUpdate = false) {
+		widget.updateStatus = function(flags) {
+			let $flags = $cont.find('.ups__status');
+			$flags.empty();
+			
+			$cont.removeClass("ups--online");
+			$cont.removeClass("ups--warn");
+			$cont.removeClass("ups--alert");
+	
+			if (flags & flagCommlost) {
+				$flags.append(renderStatusFlag("Нет сигнала", ["comlost", "alert"]));
+				return;
+			}
+			if (flags & flagOnline) {
+				$cont.addClass("ups--online");
+				$flags.append(renderStatusFlag("Сеть", ["online"]));
+			}
+			if (flags & flagOnbatt) {
+				$cont.addClass("ups--alert");
+				$flags.append(renderStatusFlag("На батарее", ["onbatt", "warn"]));
+			}
+			if ((flags & flagPlugged) && (flags & flagOnline) == 0 && (flags & flagOnbatt) == 0) {
+				$flags.append(renderStatusFlag("Выключен", ["off", "warn"]));
+			}
+			if (flags & flagCalibration) {
+				$flags.append(renderStatusFlag("Калибровка", ["cal"]));
+			}
+			if (flags & flagTrim) {
+				$flags.append(renderStatusFlag("Высокое напряжение", ["trim", "warn"]));
+			}
+			if (flags & flagBoost) {
+				$flags.append(renderStatusFlag("Низкое напряжение", ["boost", "warn"]));
+			}
+			if (flags & flagOverload) {
+				$flags.append(renderStatusFlag("Перегрузка", ["overload", "alert"]));
+			}
+			if (flags & flagBattlow) {
+				$flags.append(renderStatusFlag("Батарея разряжена", ["lowbatt", "alert"]));
+			}
+			if (flags & flagReplacebatt) {
+				$flags.append(renderStatusFlag("Замените батарею", ["replacebatt", "warn"]));
+			}
+			if ((flags & flagBattpresent) == 0) {
+				$flags.append(renderStatusFlag("Батарея отключена", ["nobatt", "alert"]));
+			}
+	
+			if (flags & flagShutdown) {
+				$flags.append(renderStatusFlag("shutdown"));
+			}
+			if (flags & flagShut_load) {
+				$flags.append(renderStatusFlag("shut_load"));
+			}
+			if (flags & flagShut_btime) {
+				$flags.append(renderStatusFlag("shut_btime"));
+			}
+			if (flags & flagShut_ltime) {
+				$flags.append(renderStatusFlag("shut_ltime"));
+			}
+			if (flags & flagShut_emerg) {
+				$flags.append(renderStatusFlag("shut_emerg"));
+			}
+		};
+		
+		widget.updateEvents = function(events = [], resetEvents = false, forceUpdate = false) {
 			console.log('Events', events);
 	
 			if (events.length == 0 && !resetEvents && !forceUpdate) {
@@ -264,102 +406,18 @@ window.moduleUps = window.moduleUps || (function() {
 						let ts_start = data.ts_start;
 						let ts_end = data.ts_end;
 						let seconds = data.seconds ? data.seconds : ts_end - ts_start;
-						text += ': ' + formatSeconds(seconds, true);
+						text += ': ' + renderSeconds(seconds);
 						break;
 	
 					default:
 						break;
 				}
 	
-				$events.append(getHtmlevent(event.Ts, text));
+				$events.append(renderEvent(event.Ts, text));
 			});
-		}
-	
-		function updateStatusFlags(flags) {
-			let $flags = $cont.find('.ups__status');
-			$flags.empty();
-			
-			$cont.removeClass("ups--online");
-			$cont.removeClass("ups--warn");
-			$cont.removeClass("ups--alert");
-	
-			if (flags & flagCommlost) {
-				$flags.append(getHtmlStatusFlag("Нет сигнала", {
-					"tags": ["comlost", "alert"],
-				}));
-				return;
-			}
-			if (flags & flagOnline) {
-				$cont.addClass("ups--online");
-				$flags.append(getHtmlStatusFlag("Сеть", {
-					"tags": ["online"],
-				}));
-			}
-			if (flags & flagOnbatt) {
-				$cont.addClass("ups--alert");
-				$flags.append(getHtmlStatusFlag("На батарее", {
-					"tags": ["onbatt", "warn"],
-				}));
-			}
-			if ((flags & flagPlugged) && (flags & flagOnline) == 0 && (flags & flagOnbatt) == 0) {
-				$flags.append(getHtmlStatusFlag("Выключен", {
-					"tags": ["off", "warn"],
-				}));
-			}
-			if (flags & flagCalibration) {
-				$flags.append(getHtmlStatusFlag("Калибровка", {
-					"tags": ["cal"],
-				}));
-			}
-			if (flags & flagTrim) {
-				$flags.append(getHtmlStatusFlag("Высокое напряжение", {
-					"tags": ["trim", "warn"],
-				}));
-			}
-			if (flags & flagBoost) {
-				$flags.append(getHtmlStatusFlag("Низкое напряжение", {
-					"tags": ["boost", "warn"],
-				}));
-			}
-			if (flags & flagOverload) {
-				$flags.append(getHtmlStatusFlag("Перегрузка", {
-					"tags": ["overload", "alert"],
-				}));
-			}
-			if (flags & flagBattlow) {
-				$flags.append(getHtmlStatusFlag("Батарея разряжена", {
-					"tags": ["lowbatt", "alert"],
-				}));
-			}
-			if (flags & flagReplacebatt) {
-				$flags.append(getHtmlStatusFlag("Замените батарею", {
-					"tags": ["replacebatt", "warn"],
-				}));
-			}
-			if ((flags & flagBattpresent) == 0) {
-				$flags.append(getHtmlStatusFlag("Батарея отключена", {
-					"tags": ["nobatt", "alert"],
-				}));
-			}
-	
-			if (flags & flagShutdown) {
-				$flags.append(getHtmlStatusFlag("shutdown"));
-			}
-			if (flags & flagShut_load) {
-				$flags.append(getHtmlStatusFlag("shut_load"));
-			}
-			if (flags & flagShut_btime) {
-				$flags.append(getHtmlStatusFlag("shut_btime"));
-			}
-			if (flags & flagShut_ltime) {
-				$flags.append(getHtmlStatusFlag("shut_ltime"));
-			}
-			if (flags & flagShut_emerg) {
-				$flags.append(getHtmlStatusFlag("shut_emerg"));
-			}
-		}
-		
-		function handleSignal(type) {
+		};
+
+		widget.handleSignal = function(type) {
 			console.log('handleSignal', type);
 	
 			let $flags = $cont.find('.ups__status');
@@ -368,9 +426,7 @@ window.moduleUps = window.moduleUps || (function() {
 				case 'disconnect':
 					if (!$cont.hasClass(opts.cssClasses.containerUpsDiconnected)) {
 						$cont.addClass(opts.cssClasses.containerUpsDiconnected);
-						$flags.append(getHtmlStatusFlag("Подключение…", {
-							"tags": ["warn"],
-						}));
+						$flags.append(renderStatusFlag("Подключение…", ["warn"]));
 					}
 					break;
 	
@@ -381,103 +437,14 @@ window.moduleUps = window.moduleUps || (function() {
 			}
 	
 			if (type in flagSignals) {
-				$flags.append(getHtmlStatusFlag(signalMap[type], {
-					"tags": ["warn"],
-				}));
+				$flags.append(renderStatusFlag(signalMap[type], ["warn"]));
 			}
-		}
-	};
-
-	function getHtmlevent(ts, text) {
-		let extraClass = '';
-		let now = new Date();
-		let d = new Date(ts);
-		let deltaSec = 0.001 * (now.getTime() - d.getTime());
-		if (deltaSec < 3600) {
-			extraClass += ' ups__event--new';
-		} else if (deltaSec > 24 * 3600) {
-			extraClass += ' ups__event--old';
-		}
-		text = text.replace("\n", "<br/>");
-		return `
-			<div class="ups__event ${extraClass}">
-				<span class="ups__event-date">${formatTsHuman(ts, false)}</span>
-				<div class="ups__event-content">${text}</div>
-			</div>
-		`;
-	}
-
-	function getHtmlStatusFlag(title, opts = {}) {
-		let cl = [""]
-			.concat(opts.tags ? opts.tags : [])
-			.map(tag => tag ? "ups__status-flag--" + tag : "ups__status-flag")
-			.join(" ")
-		;
-		return ""
-			+ "<span class='" + cl + "'>"
-			+ 	title
-			+ "</span>"
-		;	
-	}
-
-	function getHtmlDecimal(val) {
-		let s = (10 * val).toFixed(0);
-		if (s == "0") {
-			return s;
-		}
-		let intPart = s.slice(0, -1);
-		let decimalPart = s.slice(-1);
-		if (decimalPart == "0") {
-			return intPart;
-		}
-		return intPart + "<small>" + "." + decimalPart + "</small>";
-	}
-	
-	function formatSeconds(sec, seconds = false) {
-		let d = new Date(sec * 1000);
-		let h = d.getUTCHours();
-		let m = d.getUTCMinutes();
-		let s = d.getUTCSeconds();
-		let parts = [];
-		if (h > 0) {
-			parts.push(h + ' ч');
-		}
-		if (m > 0 || !seconds) {
-			parts.push(('00' + m).slice(-2) + ' мин');
-		}
-		if (seconds) {
-			parts.push(('00' + s).slice(-2) + ' сек');
-		}
-		return parts.join(' ');
-	}
-
-	function formatTsHuman(ts, seconds = false) {
-		let d = new Date(ts);
-		if (d.getTime() < 7 * 24 * 3600 * 1000) {
-			return "—";
-		}
-		let hh = ('00' + d.getHours()).slice(-2);
-		let mm = ('00' + d.getMinutes()).slice(-2);
-		let ss = ('00' + d.getSeconds()).slice(-2);
-		const months = {
-			0: "янв",
-			1: "фев",
-			2: "мар",
-			3: "апр",
-			4: "май",
-			5: "июн",
-			6: "июл",
-			7: "авг",
-			8: "сен",
-			9: "окт",
-			10: "ноя",
-			11: "дек",
 		};
-		if (!seconds) {
-			return `${d.getDate()} ${months[d.getMonth()]} ${hh}:${mm}`;
-		}
-		return `${d.getDate()} ${months[d.getMonth()]} ${hh}:${mm}:${ss}`;
-	}
+
+		widget.initWebsocket();
+
+		return widget;
+	};
 
 	return module;
 })();
