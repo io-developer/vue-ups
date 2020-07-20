@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   inkscape:version="1.0 (4035a4fb49, 2020-05-01)"
+   sodipodi:docname="battery-low-red.svg"
+   id="svg8"
+   version="1.1"
+   width="512pt"
+   viewBox="-107 0 512 512"
+   height="512pt">
+  <metadata
+     id="metadata14">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title></dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <defs
+     id="defs12" />
+  <sodipodi:namedview
+     inkscape:current-layer="svg8"
+     inkscape:cy="341.33333"
+     inkscape:cx="341.33333"
+     inkscape:zoom="1.0766602"
+     inkscape:pagecheckerboard="true"
+     showgrid="false"
+     id="namedview10"
+     inkscape:window-height="480"
+     inkscape:window-width="640"
+     inkscape:pageshadow="2"
+     inkscape:pageopacity="0"
+     guidetolerance="10"
+     gridtolerance="10"
+     objecttolerance="10"
+     borderopacity="1"
+     bordercolor="#666666"
+     pagecolor="#ffffff" />
+  <path
+     style="fill:#ff0000"
+     id="path2"
+     d="m0 85.332031v384c0 23.566407 19.101562 42.667969 42.667969 42.667969h213.332031c23.566406 0 42.667969-19.101562 42.667969-42.667969v-384zm256 384h-213.332031v-341.332031h213.332031zm0 0" />
+  <path
+     style="fill:#ff0000"
+     id="path4"
+     d="m234.667969 21.332031c0-11.78125-9.554688-21.332031-21.335938-21.332031h-128c-11.78125 0-21.332031 9.550781-21.332031 21.332031v42.667969h170.667969zm0 0" />
+  <path
+     style="fill:#ff0000"
+     id="path6"
+     d="m85.332031 448h128c11.78125 0 21.335938-9.550781 21.335938-21.332031v-64.59375l-170.578125 66.335937c.890625 10.964844 10.046875 19.589844 21.242187 19.589844zm0 0" />
+</svg>
