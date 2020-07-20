@@ -1,6 +1,6 @@
 window.moduleUps = window.moduleUps || (function() {
 	const module = {};
-
+	
 	const defaultOpts = {
 		jQuery: window.jQuery,
 		moduleWs: window.moduleWs,
@@ -31,9 +31,85 @@ window.moduleUps = window.moduleUps || (function() {
 		cssClasses: {
 			containerUpsDiconnected: 'ups--disconnected',
 		},
-	};
 
-	var actualEvents = [];
+		render: {
+			event: (ts, text) => {
+				let now = new Date();
+				let d = new Date(ts);
+				let deltaSec = 0.001 * (now.getTime() - d.getTime());
+				let extraClass = '';
+				if (deltaSec < 3600) {
+					extraClass = 'ups__event--new';
+				} else if (deltaSec > 24 * 3600) {
+					extraClass = 'ups__event--old';
+				}
+				return `
+					<div class="ups__event ${extraClass}">
+						<span class="ups__event-date">${defaultOpts.render.unixtime(ts)}</span>
+						<div class="ups__event-content">${text.replace("\n", "<br/>")}</div>
+					</div>
+				`;
+			},
+			statusFlag: (title, tags = []) => {
+				let cl = tags.map(tag => "ups__status-flag--" + tag).join(" ");
+				return `<span class="ups__status-flag ${cl}">${title}</span>`;
+			},
+			decimal: (num) => {
+				let s = (10 * num).toFixed(0);
+				if (s == "0") {
+					return s;
+				}
+				let intPart = s.slice(0, -1);
+				let decimalPart = s.slice(-1);
+				if (decimalPart == "0") {
+					return intPart;
+				}
+				return intPart + "<small>" + "." + decimalPart + "</small>";
+			},
+			seconds: (sec) => {
+				let d = new Date(sec * 1000);
+				let h = d.getUTCHours();
+				let m = d.getUTCMinutes();
+				let s = d.getUTCSeconds();
+				let parts = [];
+				if (h > 0) {
+					parts.push(h + ' ч');
+				}
+				if (m > 0 || s == 0) {
+					parts.push(('00' + m).slice(-2) + ' мин');
+				}
+				if (s > 0) {
+					parts.push(('00' + s).slice(-2) + ' сек');
+				}
+				return parts.join(' ');
+			},
+			unixtime: (ts) => {
+				let d = new Date(ts);
+				if (d.getTime() < 7 * 24 * 3600 * 1000) {
+					return "—";
+				}
+				let hh = ('00' + d.getHours()).slice(-2);
+				let mm = ('00' + d.getMinutes()).slice(-2);
+				let ss = ('00' + d.getSeconds()).slice(-2);
+				const months = {
+					0: "янв",
+					1: "фев",
+					2: "мар",
+					3: "апр",
+					4: "май",
+					5: "июн",
+					6: "июл",
+					7: "авг",
+					8: "сен",
+					9: "окт",
+					10: "ноя",
+					11: "дек",
+				};
+				return `${d.getDate()} ${months[d.getMonth()]} ${hh}:${mm}`;
+				//return `${d.getDate()} ${months[d.getMonth()]} ${hh}:${mm}:${ss}`;
+			},
+		},
+	};
 
 	const onbattReasonMap = {
 		'1': '—',
@@ -103,95 +179,24 @@ window.moduleUps = window.moduleUps || (function() {
 	const flagShut_ltime = 0x00200000;
 	const flagShut_emerg = 0x00400000;
 
-	function renderEvent(ts, text) {
-		let now = new Date();
-		let d = new Date(ts);
-		let deltaSec = 0.001 * (now.getTime() - d.getTime());
-		let extraClass = '';
-		if (deltaSec < 3600) {
-			extraClass = 'ups__event--new';
-		} else if (deltaSec > 24 * 3600) {
-			extraClass = 'ups__event--old';
-		}
-		return `
-			<div class="ups__event ${extraClass}">
-				<span class="ups__event-date">${renderTs(ts)}</span>
-				<div class="ups__event-content">${text.replace("\n", "<br/>")}</div>
-			</div>
-		`;
-	}
-
-	function renderStatusFlag(title, tags = []) {
-		let cl = tags.map(tag => "ups__status-flag--" + tag).join(" ");
-		return `<span class="ups__status-flag ${cl}">${title}</span>`;
-	}
-
-	function renderDecimal(val) {
-		let s = (10 * val).toFixed(0);
-		if (s == "0") {
-			return s;
-		}
-		let intPart = s.slice(0, -1);
-		let decimalPart = s.slice(-1);
-		if (decimalPart == "0") {
-			return intPart;
-		}
-		return intPart + "<small>" + "." + decimalPart + "</small>";
-	}
-	
-	function renderSeconds(sec) {
-		let d = new Date(sec * 1000);
-		let h = d.getUTCHours();
-		let m = d.getUTCMinutes();
-		let s = d.getUTCSeconds();
-		let parts = [];
-		if (h > 0) {
-			parts.push(h + ' ч');
-		}
-		if (m > 0 || s == 0) {
-			parts.push(('00' + m).slice(-2) + ' мин');
-		}
-		if (s > 0) {
-			parts.push(('00' + s).slice(-2) + ' сек');
-		}
-		return parts.join(' ');
-	}
-
-	function renderTs(ts) {
-		let d = new Date(ts);
-		if (d.getTime() < 7 * 24 * 3600 * 1000) {
-			return "—";
-		}
-		let hh = ('00' + d.getHours()).slice(-2);
-		let mm = ('00' + d.getMinutes()).slice(-2);
-		let ss = ('00' + d.getSeconds()).slice(-2);
-		const months = {
-			0: "янв",
-			1: "фев",
-			2: "мар",
-			3: "апр",
-			4: "май",
-			5: "июн",
-			6: "июл",
-			7: "авг",
-			8: "сен",
-			9: "окт",
-			10: "ноя",
-			11: "дек",
-		};
-		return `${d.getDate()} ${months[d.getMonth()]} ${hh}:${mm}`;
-		//return `${d.getDate()} ${months[d.getMonth()]} ${hh}:${mm}:${ss}`;
-	}
+	function extendOptsWith(customOpts) {
+		var opts = Object.assign({}, defaultOpts, customOpts);
+		opts.render = Object.assign({}, defaultOpts.render, customOpts.render || {});
+		return opts;
+	};
 	
 	module.initWidget = function(elem, customOpts) {
 		const widget = {};
 
-		var opts = defaultOpts;
-		opts = Object.assign({}, defaultOpts, customOpts);
+		var opts = defaultOpts; // hack: VSCode props hinting
+		opts = extendOptsWith(customOpts);
 		
 		const $ = opts.jQuery;
 		const $cont = $(elem);
+		const render = opts.render;
+
 		var currentWs = null;
+		var actualEvents = [];
 
 		widget.initWebsocket = function() {
 			if (currentWs) {
@@ -264,13 +269,13 @@ window.moduleUps = window.moduleUps || (function() {
 				}
 			}
 			if (state.BatteryCharge != null) {
-				$cont.find('.js-ups-battery-charge').text(state.BatteryCharge);
+				$cont.find('.js-ups-battery-charge').text(render.decimal(state.BatteryCharge));
 			}
 			if (state.UpsTimeleftSeconds != null) {
-				$cont.find('.js-ups-battery-timeleft').text(renderSeconds(state.UpsTimeleftSeconds));
+				$cont.find('.js-ups-battery-timeleft').text(render.seconds(state.UpsTimeleftSeconds));
 			}
 			if (state.InputVoltage != null) {
-				$cont.find('.js-ups-input-voltage').html(renderDecimal(state.InputVoltage));
+				$cont.find('.js-ups-input-voltage').html(render.decimal(state.InputVoltage));
 			}
 			if (state.InputVoltageMin != null) {
 				$cont.find('.js-ups-input-voltage-min').html(Math.round(state.InputVoltageMin));
@@ -279,16 +284,16 @@ window.moduleUps = window.moduleUps || (function() {
 				$cont.find('.js-ups-input-voltage-max').html(Math.round(state.InputVoltageMax));
 			}
 			if (state.OutputVoltage != null) {
-				$cont.find('.js-ups-output-voltage').html(renderDecimal(state.OutputVoltage));
+				$cont.find('.js-ups-output-voltage').html(render.decimal(state.OutputVoltage));
 			}
 			if (state.OutputLoad != null) {
-				$cont.find('.js-ups-output-load').html(renderDecimal(state.OutputLoad));
+				$cont.find('.js-ups-output-load').html(render.decimal(state.OutputLoad));
 			}
 			if (state.UpsTempInternal != null) {
-				$cont.find('.js-ups-temp').html(renderDecimal(state.UpsTempInternal));
+				$cont.find('.js-ups-temp').html(render.decimal(state.UpsTempInternal));
 			}
 			if (state.UpsTransferOnBatteryDate) {
-				$cont.find('.js-ups-onbattery-date').text(renderTs(state.UpsTransferOnBatteryDate));
+				$cont.find('.js-ups-onbattery-date').text(render.unixtime(state.UpsTransferOnBatteryDate));
 			}
 			if (state.UpsTransferOnBatteryReason) {
 				$cont.find('.js-ups-onbattery-reason').text(
@@ -297,7 +302,7 @@ window.moduleUps = window.moduleUps || (function() {
 			}
 			if (state.UpsOnBatterySeconds != null) {
 				if (state.UpsOnBatterySeconds > 0) {
-					$cont.find('.js-ups-onbattery-time').text(renderSeconds(state.UpsOnBatterySeconds));
+					$cont.find('.js-ups-onbattery-time').text(render.seconds(state.UpsOnBatterySeconds));
 				} else {
 					$cont.find('.js-ups-onbattery-time').text("—");
 				}
@@ -313,56 +318,56 @@ window.moduleUps = window.moduleUps || (function() {
 			$cont.removeClass("ups--alert");
 	
 			if (flags & flagCommlost) {
-				$flags.append(renderStatusFlag("Нет сигнала", ["comlost", "alert"]));
+				$flags.append(render.statusFlag("Нет сигнала", ["comlost", "alert"]));
 				return;
 			}
 			if (flags & flagOnline) {
 				$cont.addClass("ups--online");
-				$flags.append(renderStatusFlag("Сеть", ["online"]));
+				$flags.append(render.statusFlag("Сеть", ["online"]));
 			}
 			if (flags & flagOnbatt) {
 				$cont.addClass("ups--alert");
-				$flags.append(renderStatusFlag("На батарее", ["onbatt", "warn"]));
+				$flags.append(render.statusFlag("На батарее", ["onbatt", "warn"]));
 			}
 			if ((flags & flagPlugged) && (flags & flagOnline) == 0 && (flags & flagOnbatt) == 0) {
-				$flags.append(renderStatusFlag("Выключен", ["off", "warn"]));
+				$flags.append(render.statusFlag("Выключен", ["off", "warn"]));
 			}
 			if (flags & flagCalibration) {
-				$flags.append(renderStatusFlag("Калибровка", ["cal"]));
+				$flags.append(render.statusFlag("Калибровка", ["cal"]));
 			}
 			if (flags & flagTrim) {
-				$flags.append(renderStatusFlag("Высокое напряжение", ["trim", "warn"]));
+				$flags.append(render.statusFlag("Высокое напряжение", ["trim", "warn"]));
 			}
 			if (flags & flagBoost) {
-				$flags.append(renderStatusFlag("Низкое напряжение", ["boost", "warn"]));
+				$flags.append(render.statusFlag("Низкое напряжение", ["boost", "warn"]));
 			}
 			if (flags & flagOverload) {
-				$flags.append(renderStatusFlag("Перегрузка", ["overload", "alert"]));
+				$flags.append(render.statusFlag("Перегрузка", ["overload", "alert"]));
 			}
 			if (flags & flagBattlow) {
-				$flags.append(renderStatusFlag("Батарея разряжена", ["lowbatt", "alert"]));
+				$flags.append(render.statusFlag("Батарея разряжена", ["lowbatt", "alert"]));
 			}
 			if (flags & flagReplacebatt) {
-				$flags.append(renderStatusFlag("Замените батарею", ["replacebatt", "warn"]));
+				$flags.append(render.statusFlag("Замените батарею", ["replacebatt", "warn"]));
 			}
 			if ((flags & flagBattpresent) == 0) {
-				$flags.append(renderStatusFlag("Батарея отключена", ["nobatt", "alert"]));
+				$flags.append(render.statusFlag("Батарея отключена", ["nobatt", "alert"]));
 			}
 	
 			if (flags & flagShutdown) {
-				$flags.append(renderStatusFlag("shutdown"));
+				$flags.append(render.statusFlag("shutdown"));
 			}
 			if (flags & flagShut_load) {
-				$flags.append(renderStatusFlag("shut_load"));
+				$flags.append(render.statusFlag("shut_load"));
 			}
 			if (flags & flagShut_btime) {
-				$flags.append(renderStatusFlag("shut_btime"));
+				$flags.append(render.statusFlag("shut_btime"));
 			}
 			if (flags & flagShut_ltime) {
-				$flags.append(renderStatusFlag("shut_ltime"));
+				$flags.append(render.statusFlag("shut_ltime"));
 			}
 			if (flags & flagShut_emerg) {
-				$flags.append(renderStatusFlag("shut_emerg"));
+				$flags.append(render.statusFlag("shut_emerg"));
 			}
 		};
 		
@@ -406,14 +411,14 @@ window.moduleUps = window.moduleUps || (function() {
 						let ts_start = data.ts_start;
 						let ts_end = data.ts_end;
 						let seconds = data.seconds ? data.seconds : ts_end - ts_start;
-						text += ': ' + renderSeconds(seconds);
+						text += ': ' + render.seconds(seconds);
 						break;
 	
 					default:
 						break;
 				}
 	
-				$events.append(renderEvent(event.Ts, text));
+				$events.append(render.event(event.Ts, text));
 			});
 		};
 
@@ -426,7 +431,7 @@ window.moduleUps = window.moduleUps || (function() {
 				case 'disconnect':
 					if (!$cont.hasClass(opts.cssClasses.containerUpsDiconnected)) {
 						$cont.addClass(opts.cssClasses.containerUpsDiconnected);
-						$flags.append(renderStatusFlag("Подключение…", ["warn"]));
+						$flags.append(render.statusFlag("Подключение…", ["warn"]));
 					}
 					break;
 	
@@ -437,7 +442,7 @@ window.moduleUps = window.moduleUps || (function() {
 			}
 	
 			if (type in flagSignals) {
-				$flags.append(renderStatusFlag(signalMap[type], ["warn"]));
+				$flags.append(render.statusFlag(signalMap[type], ["warn"]));
 			}
 		};
 
