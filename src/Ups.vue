@@ -1,5 +1,55 @@
-<style lang="css" src="./ups.css"></style>
-<script lang="javascript" src="./ups.js"></script>
+<style lang="css" src="./Ups.css"></style>
+
+<script>
+	import Model from "./model/Model";
+	import TestModel from "./model/TestModel";
+	import EventComponent from "./components/Event";
+	import StatusFlagComponent from "./components/StatusFlag";
+
+	let model = null;
+
+	export default {
+		name: "Ups",
+		components: {
+			'Event': EventComponent,
+			'StatusFlag': StatusFlagComponent,
+		},
+		props: {
+			staticClass: {
+				default: '',
+			},
+			mode: {
+				default: null,
+			},
+			websocketUri: {
+				default: 'ws://localhost:8001/ws',
+			},
+			websocketReconnect: {
+				default: true,
+			},
+			websocketReconnectInterval: {
+				default: 10000,
+			},
+			reinitInterval: {
+				default: 60000,
+			},
+			eventLimit: {
+				default: 7,
+			},
+			locale: {
+				default: 'en_US',
+			},
+		},
+		data: function() {
+			if (model) {
+				model.destroy();
+			}
+			model = this.mode == 'test' ? new TestModel() : new WsModel(this);
+			return model.getData();
+		},
+		methods: {},
+	};
+</script>
 
 <template>
 
