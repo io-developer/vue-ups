@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>My first Vue app</title>
+    <script src="https://unpkg.com/vue"></script>
+</head>
+<body>
+    <div id="app">
+        {{ message }}
+
+        <ol>
+            <li v-for="elem in elems">
+              {{ elem.title }}
+            </li>
+          </ol>
+    </div>
+
+    <script>
+        var data = {
+            message: "Hello Vue12!",
+            elems: [
+                {title: "foo"},
+                {title: "bar"},
+                {title: "baz"},
+            ],
+        };
+
+        var app = new Vue({
+            el: "#app",
+            data: data,
+        });
+
+        setInterval(function() {
+            data.message = new Date();
+            data.elems = [
+                {title: Math.floor(100 * Math.random())},
+                {title: Math.floor(100 * Math.random())},
+                {title: Math.floor(100 * Math.random())},
+            ];
+        }, 1000);
+
+    </script>
+</body>
+</html>

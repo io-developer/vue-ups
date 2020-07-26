@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Ups vue component example</title>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@100;300;400;700;900&display=swap"/>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: #000;
+            font-family: 'Roboto', sans-serif;
+        }
+
+        .block {
+            display: block;
+            position: relative;
+            margin: 10px 0;
+            padding: 40px;
+        }
+
+        .block::before {
+            content: attr(title);
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            display: block;
+            opacity: 0.25;
+            margin: 0;
+            font-size: 12px;
+            font-weight: 400;
+            text-transform: uppercase;
+        }
+
+        .block--bg {
+            background-color: #161616;
+        }
+    </style>
+</head>
+<body>
+    <div class="block block--bg" id="ups"></div>
+    <script src="bundle.js"></script>
+</body>
+</html>
