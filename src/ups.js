@@ -1,5 +1,6 @@
 import ws from "./ws.js";
 import EventComponent from "./components/Event.vue";
+import StatusFlagComponent from "./components/StatusFlag.vue";
 
 export default {
     name: "Ups",
@@ -8,17 +9,24 @@ export default {
             {
                 Ts: "2020-07-25T00:00:00",
                 Type: "signal",
-                Data: {signal: "powerout"},
+                Data: {
+                    signal: "powerout",
+                },
             },
             {
                 Ts: "2020-07-25T00:00:01",
                 Type: "onbatt",
-                Data: {reason_type: 7},
+                Data: {
+                    reason_type: 7,
+                },
             },
             {
                 Ts: "2020-07-25T00:23:37",
                 Type: "onbatt_end",
-                Data: {ts_start: "2020-07-25T00:00:01", ts_end: "2020-07-25T00:23:37"},
+                Data: {
+                    ts_start: "2020-07-25T00:00:01",
+                    ts_end: "2020-07-25T00:23:37",
+                },
             },
             {
                 Ts: "2020-07-25T00:23:38",
@@ -33,12 +41,17 @@ export default {
                 Type: "line_ok",
             },
         ],
+        statusFlags: [
+            { title: "online", tags: ["online"] },
+            { title: "startselftest", tags: ["warn"] },
+        ],
     }),
     props: {
         staticClass: '',
     },
     methods: {},
     components: {
-        'event': EventComponent,
+        'Event': EventComponent,
+        'StatusFlag': StatusFlagComponent,
     }
 };

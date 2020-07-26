@@ -8,15 +8,13 @@
 			<div class="ups-layout__left">
 
 				<div class="ups__status">
-					<!--
-					<span class="ups__status-flag">N/A</span>
-					-->
+					<StatusFlag v-for="(flag, index) in statusFlags" :key="index" :flag="flag"/>
 				</div>
 
 				<div class="ups__events">
-					<event v-for="(event, index) in events" :key="index" :event="event"/>
+					<Event v-for="(event, index) in events" :key="index" :event="event"/>
 				</div>
-
+				
 			</div>
 			<div class="ups-layout__right ups__indicators">
 
