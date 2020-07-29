@@ -1,3 +1,5 @@
+import StatusFlag from './StatusFlag';
+
 class TestModel {
     constructor(options = {}) {
     }
@@ -67,8 +69,9 @@ class TestModel {
                 },
             ],
             statusFlags: [
-                { title: "online", tags: ["online"] },
-                { title: "startselftest", tags: ["warn"] },
+                new StatusFlag(StatusFlag.ONLINE, ["online"]),
+                new StatusFlag(StatusFlag.OVERLOAD, ["overload", "alert"]),
+                new StatusFlag("selftest", ["warn"]),
             ],
         };
     }
