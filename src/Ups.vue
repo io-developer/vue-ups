@@ -5,6 +5,9 @@
 	import TestModel from "./model/TestModel";
 	import EventComponent from "./components/Event";
 	import StatusFlagComponent from "./components/StatusFlag";
+	import DecimalComponent from "./components/Decimal";
+	import DurationComponent from "./components/Duration";
+	import TimestampComponent from "./components/Timestamp";
 
 	let model = null;
 
@@ -13,38 +16,32 @@
 		components: {
 			'Event': EventComponent,
 			'StatusFlag': StatusFlagComponent,
+			'Decimal': DecimalComponent,
+			'Duration': DurationComponent,
+			'Timestamp': TimestampComponent,
 		},
 		props: {
 			staticClass: {
 				default: '',
 			},
+			locale: {
+				default: 'en_US',
+			},
 			mode: {
 				default: null,
 			},
-			websocketUri: {
-				default: 'ws://localhost:8001/ws',
-			},
-			websocketReconnect: {
-				default: true,
-			},
-			websocketReconnectInterval: {
-				default: 10000,
-			},
-			reinitInterval: {
-				default: 60000,
-			},
-			eventLimit: {
-				default: 7,
-			},
-			locale: {
-				default: 'en_US',
+			modelOptions: {
+				default: {},
 			},
 		},
 		data: function() {
 			if (model) {
 				model.destroy();
 			}
-			model = this.mode == 'test' ? new TestModel() : new WsModel(this);
+			model = this.mode == 'test'
+				? new TestModel(this.modelOptions)
+				: new Model(this.modelOptions)
+			;
 			return model.getData();
 		},
 		methods: {},
@@ -71,25 +68,34 @@
 				<div class="ups__indicator ups__indicator--battery-charge">
 					<i class="ups__indicator-icon"></i>
 					<div class="ups__indicator-value-group">
-						<p class="ups__indicator-value js-ups-battery-charge">N/A</p>
-						<p class="ups__indicator-value ups__indicator-value--small js-ups-battery-timeleft"
-						>N/A</p>
+						<p class="ups__indicator-value">
+							<Decimal :value="state.BatteryCharge"/>
+						</p>
+						<p class="ups__indicator-value ups__indicator-value--small">
+							<Duration :seconds="state.UpsTimeleftSeconds" :showSeconds="false"/>
+						</p>
 					</div>
 				</div>
 
 				<div class="ups__indicator ups__indicator--input-voltage">
 					<i class="ups__indicator-icon"></i>
-					<p class="ups__indicator-value js-ups-input-voltage">N/A</p>
+					<p class="ups__indicator-value">
+						<Decimal :value="state.InputVoltage"/>
+					</p>
 				</div>
 
 				<div class="ups__indicator ups__indicator--output-load">
 					<i class="ups__indicator-icon"></i>
-					<p class="ups__indicator-value js-ups-output-load">N/A</p>
+					<p class="ups__indicator-value">
+						<Decimal :value="state.OutputLoad"/>
+					</p>
 				</div>
 
 				<div class="ups__indicator ups__indicator--temp">
 					<i class="ups__indicator-icon"></i>
-					<p class="ups__indicator-value js-ups-temp">N/A</p>
+					<p class="ups__indicator-value">
+						<Decimal :value="state.UpsTempInternal"/>
+					</p>
 				</div>
 
 			</div>

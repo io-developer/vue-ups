@@ -4,6 +4,9 @@
         data: () => ({}),
         props: {
             seconds: 0,
+            showSeconds: {
+                default: true,
+            },
         },
         methods: {
             getText: function() {
@@ -25,7 +28,7 @@
 				if (m > 0 || s == 0) {
 					parts.push(('00' + m).slice(-2) + ' мин');
 				}
-				if (s > 0) {
+				if (s > 0 && this.showSeconds) {
 					parts.push(('00' + s).slice(-2) + ' сек');
 				}
 				return parts.join(' ');

@@ -7,6 +7,22 @@ export default class {
 
     getData() {
         return {
+            state: {
+                UpsStatus: {
+                    Flag: 0xFFFFFFFF,
+                },
+                BatteryCharge: 97.3,
+                UpsTimeleftSeconds: 123456,
+                InputVoltage: 227.123,
+                InputVoltageMin: 221.456,
+                InputVoltageMax: 231.789,
+                OutputVoltage: 227.147,
+                OutputLoad: 7.753,
+                UpsTempInternal: 27.84,
+                UpsTransferOnBatteryDate: (new Date("2020-07-30T13:49:37")).getTime() * 0.001,
+                UpsTransferOnBatteryReason: 2,
+                UpsOnBatterySeconds: 456,
+            },
             events: [
                 {
                     Ts: "2020-07-25T00:00:00",

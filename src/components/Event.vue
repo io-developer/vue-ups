@@ -1,6 +1,6 @@
 <script>
-    import DurationComponent from "./Duration.vue";
-    import TimeComponent from "./Time.vue";
+    import DurationComponent from "./Duration";
+    import TimestampComponent from "./Timestamp";
 
     const eventMap = {
 		"commlost": "Нет сигнала",
@@ -42,8 +42,8 @@
     export default {
         name: "Event",
         components: {
-            "DurationComponent": DurationComponent,
-            "TimeComponent": TimeComponent,
+            "Duration": DurationComponent,
+            "Timestamp": TimestampComponent,
         },
         data: () => ({}),
         props: {
@@ -92,7 +92,7 @@
 <template>
     
     <div class="ups__event">
-        <TimeComponent class="ups__event-date" :ts="event.Ts"/>
+        <Timestamp class="ups__event-date" :ts="event.Ts"/>
 
         <div v-if="isSignal()" class="ups__event-content">
 
@@ -107,7 +107,7 @@
                 {{ getOnbattReason() }}
             </em>
             <em v-else-if="event.Type == 'onbatt_end'">
-                <DurationComponent :seconds="getOnbattEndDuration()"/>
+                <Duration :seconds="getOnbattEndDuration()"/>
             </em>
 
         </div>

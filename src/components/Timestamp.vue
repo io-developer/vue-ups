@@ -1,6 +1,6 @@
 <script>
     export default {
-        name: "Time",
+        name: "Timestamp",
         data: () => ({}),
         props: {
             ts: 0,
