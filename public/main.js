@@ -7,11 +7,13 @@ new Vue({
     render: h => h(Ups, {
         props: {
             staticClass: 'block block--bg',
-            mode: 'test',
-            websocketUri: 'ws://home-nas.iodev:3560/ws',
-            reinitInterval: 300 * 1000,
-            eventLimit: 17,
+            mode: 'prod',
             locale: 'ru_RU',
+            modelOptions: {
+                websocketUri: 'ws://home-nas.iodev:3560/ws',
+                reinitInterval: 300 * 1000,
+                eventLimit: 17,
+            },
         },
     }),
 });

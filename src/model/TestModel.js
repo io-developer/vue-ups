@@ -1,5 +1,5 @@
-export default class {
-    constructor() {
+class TestModel {
+    constructor(options = {}) {
     }
 
     destroy() {
@@ -72,4 +72,7 @@ export default class {
             ],
         };
     }
-};
+}
+
+
+export default TestModel;
