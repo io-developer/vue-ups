@@ -3,15 +3,17 @@
         name: "StatusFlag",
         data: () => ({}),
         props: {
-            flag: {
-                title: "N/A",
-                tags: [],
+            title: {
+                default: "N/A",
+            },
+            tags: {
+                default: [],
             },
         },
         methods: {
             getTagClasses: function() {
                 let classMap = {};
-                (this.flag.tags || []).forEach(tag => {
+                (this.tags || []).forEach(tag => {
                     classMap["ups__status-flag--" + tag] = true;
                 });
                 return classMap;
@@ -21,5 +23,5 @@
 </script>
 
 <template>
-    <span class="ups__status-flag" :class="getTagClasses()">{{ flag.title }}</span>
+    <span class="ups__status-flag" :class="getTagClasses()">{{ title }}</span>
 </template>

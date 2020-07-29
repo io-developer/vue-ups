@@ -55,7 +55,7 @@
 			<div class="ups-layout__left">
 
 				<div class="ups__status">
-					<StatusFlag v-for="(flag, index) in statusFlags" :key="index" :flag="flag"/>
+					<StatusFlag v-for="(flag, index) in statusFlags" :key="index" v-bind="flag"/>
 				</div>
 
 				<div class="ups__events">
