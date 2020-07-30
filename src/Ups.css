@@ -5,15 +5,13 @@
     font-size: 12px;
 }
 
-.ups--disconnected {
-}
-
-.ups--online {
+.ups--status-online {
     /*background-color: #3f51b5;*/
     background-color: #121c4e;
 }
 
-.ups--alert {
+.ups--alert,
+.ups--status-onbatt {
     background-color: #660000;
 }
 
@@ -51,11 +49,21 @@
     line-height: 1.2;
 }
 
-.ups__status-flag--warn {
+.ups__status-flag--warn,
+.ups__status-flag--onbatt,
+.ups__status-flag--off,
+.ups__status-flag--trim,
+.ups__status-flag--boost,
+.ups__status-flag--replacebatt {
     color: #FFCC00;
 }
 
-.ups__status-flag--alert {
+.ups__status-flag--alert,
+.ups__status-flag--comlost,
+.ups__status-flag--overload,
+.ups__status-flag--lowbatt,
+.ups__status-flag--nobatt,
+.ups__status-flag--shutdown {
     color: #FF0000;
 }
 

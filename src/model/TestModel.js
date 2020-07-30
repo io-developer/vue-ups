@@ -9,6 +9,8 @@ class TestModel {
 
     getData() {
         return {
+            
+            // @see github.com/io-developer/prom-apcupsd-exporter/model/State.go
             state: {
                 UpsStatus: {
                     Flag: 0xFFFFFFFF,
@@ -25,6 +27,8 @@ class TestModel {
                 UpsTransferOnBatteryReason: 2,
                 UpsOnBatterySeconds: 456,
             },
+
+            // @see github.com/io-developer/prom-apcupsd-exporter/model/Event.go
             events: [
                 {
                     Ts: "2020-07-25T00:00:00",
@@ -68,6 +72,8 @@ class TestModel {
                     Type: "line_ok",
                 },
             ],
+
+            /** @type {StatusFlag[]} */
             statusFlags: [
                 new StatusFlag(StatusFlag.ONLINE, ["online"]),
                 new StatusFlag(StatusFlag.OVERLOAD, ["overload", "alert"]),

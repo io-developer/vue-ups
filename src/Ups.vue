@@ -3,6 +3,7 @@
 <script>
 	import Model from "./model/Model";
 	import TestModel from "./model/TestModel";
+	import StatusFlag from "./model/StatusFlag";
 	import EventComponent from "./components/Event";
 	import StatusFlagComponent from "./components/StatusFlag";
 	import DecimalComponent from "./components/Decimal";
@@ -44,13 +45,26 @@
 			;
 			return model.getData();
 		},
-		methods: {},
+		methods: {
+			getRootClass: function() {
+				let map = {};
+				map[this.staticClass] = true;
+
+				for (let k in this.statusFlags) {
+					this.statusFlags[k].tags.forEach(tag => {
+						map[`ups--status-${tag}`] = true;
+					});
+				}
+				
+				return map;
+			},
+		},
 	};
 </script>
 
 <template>
 
-	<div class="ups" :class="staticClass" title="Питание" >
+	<div class="ups" :class="getRootClass()" title="Питание" >
 		<div class="ups-layout">
 			<div class="ups-layout__left">
 

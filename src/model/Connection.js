@@ -13,7 +13,7 @@ class Connection {
 		this.onClose = null;
 		this.onDiconnect = null;
 
-		/** @var WebSocket */
+		/** @type {WebSocket} */
 		this.ws = null;
 		this.isConnected = false;
 		this.isConnecting = false;
