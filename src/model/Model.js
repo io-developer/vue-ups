@@ -1,6 +1,12 @@
 import Connection from './Connection';
 import StatusFlag from './StatusFlag';
 
+import EventSchema from './schema/Event';
+import StateSchema from './schema/State';
+import WsMsgInitSchema from './schema/WsMsgInit';
+import WsMsgChangeSchema from './schema/WsMsgChange';
+import WsMsgSignalSchema from './schema/WsMsgSignal';
+
 const onbattReasonMap = {
     '1': '—',
     '2': 'Самодиагностика',
@@ -49,7 +55,7 @@ const eventSignals = {
     'endselftest': 1,
 };
 
-class Model {
+export default class Model {
     constructor(options = {}) {
         this.opts = Object.assign({
             websocketUri: 'ws://localhost:8001/ws',
@@ -59,10 +65,10 @@ class Model {
 
         this.data = {
 
-            // @see github.com/io-developer/prom-apcupsd-exporter/model/State.go
+            /** @type {StateSchema} */
             state: {},
 
-            // @see github.com/io-developer/prom-apcupsd-exporter/model/Event.go
+            /** @type {EventSchema[]} */
             events: [],
 
             /** @type {StatusFlag[]} */
@@ -98,34 +104,32 @@ class Model {
         this.handleSignal("disconnect");
     }
 
-    onConnData(data = {}) {
-        let state = {};
-        let events = [];
+    onConnData(msgData = {}) {
+        if (msgData.type == WsMsgInitSchema.TYPE) {
+            /** @type {WsMsgInitSchema} */
+            let data = msgData;
 
-        switch (data.type) {
-            case 'init': 
-                state = data.model_state || {};
-                events = data.model_events || [];
-                this.updateState(state);
-                this.updateEvents(events, true);
-                break;
+            this.updateState(data.model_state || {});
+            this.updateEvents(data.model_events || [], true);
 
-            case 'change': 
-                let diff = data.model_state_diff || {};
-                for (let k in diff) {
-                    state[k] = diff[k][1];
-                }
-                events = data.model_events_new || [];
-                this.updateState(state);
-                this.updateEvents(events);
-                break;
+        } else if (msgData.type == WsMsgChangeSchema.TYPE) {
+            /** @type {WsMsgChangeSchema} */
+            let data = msgData;
 
-            case 'signal': 
-                this.handleSignal(data.signal);
-                this.updateEvents([], false, false);
-                break;
+            let state = {};
+            let diff = data.model_state_diff || {};
+            for (let k in diff) {
+                state[k] = diff[k][1];
+            }
+            this.updateState(state);
+            this.updateEvents(data.model_events_new || []);
 
-            default: break;
+        } else if (msgData.type == WsMsgSignalSchema.TYPE) {
+            /** @type {WsMsgSignalSchema} */
+            let data = msgData;
+
+            this.handleSignal(data.signal);
+            this.updateEvents([], false, false);
         }
     }
 
@@ -133,26 +137,33 @@ class Model {
         this.conn.send("init");
     }
 
-    updateState(state) {
-        this.data.state = Object.assign({}, this.data.state, state);
-        if (state.UpsStatus) {
-            if (state.UpsStatus.Flag != null) {
-                this.updateStatus(state.UpsStatus.Flag);
-            }
+    /**
+     * @param {StateSchema} diff
+     */
+    updateState(diff) {
+        this.data.state = Object.assign({}, this.data.state, diff);
+        if (diff.UpsStatus && diff.UpsStatus.Flag != null) {
+            this.updateStatus(diff.UpsStatus.Flag);
         }
     }
 
-    updateStatus(flags) {
-        this.data.statusFlags = StatusFlag.typesFromStatus(flags).map(
+    /**
+     * @param {Number} flag
+     */
+    updateStatus(flag) {
+        this.data.statusFlags = StatusFlag.typesFromStatus(flag).map(
             type => new StatusFlag(type, [type])
         );
     }
 
+    /**
+     * @param {EventSchema[]} events
+     * @param {Boolean} resetEvents
+     * @param {Boolean} forceUpdate
+     */
     updateEvents(events = [], resetEvents = false, forceUpdate = false) {
     }
 
     handleSignal(type) {
     }
 }
-
-export default Model;

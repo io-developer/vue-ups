@@ -1,6 +1,6 @@
 import Flag from './ApcupsdStatus';
 
-class StatusFlag {
+export default class StatusFlag {
     /* jshint ignore:start */
     static COMLOST = "comlost"
     static ONLINE = "online"
@@ -40,6 +40,3 @@ class StatusFlag {
         this.tags = tags;
     }
 }
-
-
-export default StatusFlag;

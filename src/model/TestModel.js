@@ -1,6 +1,8 @@
 import StatusFlag from './StatusFlag';
+import EventSchema from './schema/Event';
+import StateSchema from './schema/State';
 
-class TestModel {
+export default class TestModel {
     constructor(options = {}) {
     }
 
@@ -10,7 +12,7 @@ class TestModel {
     getData() {
         return {
             
-            // @see github.com/io-developer/prom-apcupsd-exporter/model/State.go
+            /** @type {StateSchema} */
             state: {
                 UpsStatus: {
                     Flag: 0xFFFFFFFF,
@@ -28,7 +30,7 @@ class TestModel {
                 UpsOnBatterySeconds: 456,
             },
 
-            // @see github.com/io-developer/prom-apcupsd-exporter/model/Event.go
+            /** @type {EventSchema[]} */
             events: [
                 {
                     Ts: "2020-07-25T00:00:00",
@@ -82,6 +84,3 @@ class TestModel {
         };
     }
 }
-
-
-export default TestModel;

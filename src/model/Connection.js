@@ -1,4 +1,4 @@
-class Connection {
+export default class Connection {
 	constructor(options) {
 		this.opts = Object.assign({
 			uri: 'ws://',
@@ -97,5 +97,3 @@ class Connection {
 		}
 	}
 }
-
-export default Connection;
