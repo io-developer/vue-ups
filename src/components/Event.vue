@@ -50,48 +50,57 @@
         },
         data: () => ({}),
         props: {
-            event: {
-                Ts: 0,
-                Type: "",
-                Data: {},
-            },
+            timestamp: 0,
+            type: "",
+            data: {},
         },
         methods: {
             isSignal: function() {
-                return this.event.Type == EventType.SIGNAL;
+                return this.type == EventType.SIGNAL;
             },
             isOnbatt: function() {
-                return this.event.Type == EventType.ONBATT;
+                return this.type == EventType.ONBATT;
             },
             isOnbattEnd: function() {
-                return this.event.Type == EventType.ONBATT_END;
+                return this.type == EventType.ONBATT_END;
             },
-
+            getActiveClass: function() {
+                let deltaSec = this.getNowDeltaSeconds();
+                return {
+                    'ups__event--new': deltaSec < 3600,
+                    'ups__event--old': deltaSec > 24 * 3600,
+                };
+            },
+            getUnixSeconds: function(ts = null) {
+                ts = ts || this.timestamp;
+                if (typeof ts == "string") {
+                    ts = new Date(ts);
+                }
+                if (ts instanceof Date) {
+                    return 0.001 * ts.getTime();
+                }
+                return Number(ts);
+            },
+            getNowDeltaSeconds: function() {
+                return this.getUnixSeconds(new Date()) - this.getUnixSeconds();
+            },
             getEventText: function() {
-                let event = this.event;
-                return event.Type in eventMap ? eventMap[event.Type] : event.Type;
+                return this.type in eventMap ? eventMap[this.type] : this.type;
             },
             getSignalText: function() {
-                let data = this.event.Data || {};
+                let data = this.data || {};
                 return data.signal in signalMap ? signalMap[data.signal] : data.signal;
             },
             getOnbattReason: function() {
-                let data = this.event.Data || {};
+                let data = this.data || {};
                 let reason = data.reason_type;
                 reason = reason in onbattReasonMap ? onbattReasonMap[reason] : reason;
                 return ('' + reason).toLocaleLowerCase();
             },
             getOnbattEndDuration: function() {
-                let data = this.event.Data || {};
-                const toUnixSeconds = (ts) => {
-                    if (typeof ts == "string") {
-                        let d = new Date(ts);
-                        return 0.001 * d.getTime();
-                    }
-                    return Number(ts);
-                };
-                let ts_start = toUnixSeconds(data.ts_start);
-                let ts_end = toUnixSeconds(data.ts_end);
+                let data = this.data || {};
+                let ts_start = this.getUnixSeconds(data.ts_start);
+                let ts_end = this.getUnixSeconds(data.ts_end);
                 let seconds = data.seconds ? data.seconds : ts_end - ts_start;
                 return seconds;
             },
@@ -101,8 +110,8 @@
 
 <template>
     
-    <div class="ups__event">
-        <Timestamp class="ups__event-date" :ts="event.Ts"/>
+    <div class="ups__event" :class="getActiveClass()">
+        <Timestamp class="ups__event-date" :value="timestamp"/>
 
         <div v-if="isSignal()" class="ups__event-content">
 

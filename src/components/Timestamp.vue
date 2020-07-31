@@ -3,11 +3,11 @@
         name: "Timestamp",
         data: () => ({}),
         props: {
-            ts: 0,
+            value: 0,
         },
         methods: {
             getText: function() {
-                let d = new Date(this.ts);
+                let d = new Date(this.value);
 				if (isNaN(d.valueOf()) || d.getTime() < 7 * 24 * 3600 * 1000) {
 					return "—";
 				}

@@ -76,7 +76,11 @@
 				</div>
 
 				<div class="ups__events">
-					<Event v-for="(event, index) in events" :key="index" :event="event"/>
+					<Event v-for="(event, index) in events" :key="index"
+						:timestamp="event.Ts"
+						:type="event.Type"
+						:data="event.Data"
+					/>
 				</div>
 				
 			</div>
