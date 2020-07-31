@@ -2,29 +2,32 @@
     import DurationComponent from "./Duration";
     import TimestampComponent from "./Timestamp";
 
+    import EventType from '../model/schema/EventType';
+    import SignalType from '../model/schema/SignalType';
+
     const eventMap = {
-		"commlost": "Нет сигнала",
-		"commlost_end": "Сигнал ОК",
-		"onbatt": "-> Батарея",
-		"onbatt_end": "<- Батарея",
-		"offline": "Нет сети",
-		"online": "В сети",
-		"line_ok": "Сеть ОК",
-		"trim": "Высок напр",
-		"boost": "Низк напр",
-		"overload": "Перегрузка",
-		"overload_end": "Нагрузка ОК",
-		"nobatt": "Нет батареи",
-		"nobatt_end": "Батарея ОК",
-		"turned_on": "Включен",
-		"turned_off": "Выключен",
+		[EventType.COMMLOST]: "Нет сигнала",
+		[EventType.COMMLOST_END]: "Сигнал ОК",
+		[EventType.ONBATT]: "-> Батарея",
+		[EventType.ONBATT_END]: "<- Батарея",
+		[EventType.OFFLINE]: "Нет сети",
+		[EventType.ONLINE]: "В сети",
+		[EventType.LINE_OK]: "Сеть ОК",
+		[EventType.TRIM]: "Высок напр",
+		[EventType.BOOST]: "Низк напр",
+		[EventType.OVERLOAD]: "Перегрузка",
+		[EventType.OVERLOAD_END]: "Нагрузка ОК",
+		[EventType.NOBATT]: "Нет батареи",
+		[EventType.NOBATT_END]: "Батарея ОК",
+		[EventType.TURNED_ON]: "Включен",
+		[EventType.TURNED_OFF]: "Выключен",
 	};
 	
 	const signalMap = {
-		'powerout': 'Сбой в сети',
-		'mainsback': 'В сети',
-		'startselftest': 'Тест',
-		'endselftest': 'Тест пройден',
+		[SignalType.POWEROUT]: 'Сбой в сети',
+		[SignalType.MAINSBACK]: 'В сети',
+		[SignalType.STARTSELFTEST]: 'Тест',
+		[SignalType.ENDSELFTEST]: 'Тест пройден',
     };
 
     const onbattReasonMap = {
@@ -55,8 +58,15 @@
         },
         methods: {
             isSignal: function() {
-                return this.event.Type == "signal";
+                return this.event.Type == EventType.SIGNAL;
             },
+            isOnbatt: function() {
+                return this.event.Type == EventType.ONBATT;
+            },
+            isOnbattEnd: function() {
+                return this.event.Type == EventType.ONBATT_END;
+            },
+
             getEventText: function() {
                 let event = this.event;
                 return event.Type in eventMap ? eventMap[event.Type] : event.Type;
@@ -103,10 +113,10 @@
 
             <span>{{ getEventText() }}</span>
 
-            <em v-if="event.Type == 'onbatt'">
+            <em v-if="isOnbatt()">
                 {{ getOnbattReason() }}
             </em>
-            <em v-else-if="event.Type == 'onbatt_end'">
+            <em v-else-if="isOnbattEnd()">
                 <Duration :seconds="getOnbattEndDuration()"/>
             </em>
 

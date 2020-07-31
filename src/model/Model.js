@@ -1,59 +1,13 @@
 import Connection from './Connection';
 import StatusFlag from './StatusFlag';
+import SignalType from './schema/SignalType';
 
-import EventSchema from './schema/Event';
 import StateSchema from './schema/State';
+import EventSchema from './schema/Event';
+import EventType from './schema/EventType';
 import WsMsgInitSchema from './schema/WsMsgInit';
 import WsMsgChangeSchema from './schema/WsMsgChange';
 import WsMsgSignalSchema from './schema/WsMsgSignal';
-
-const onbattReasonMap = {
-    '1': '—',
-    '2': 'Самодиагностика',
-    '3': 'Команда от ПО',
-    '4': 'Низкое напр.',
-    '5': 'Высокое напр.',
-    '6': 'Напряжение',
-    '7': 'Скачки напряжения',
-    '8': 'Частота',
-    '9': 'Неизвестно',
-};
-
-const eventMap = {
-    "commlost": "Нет сигнала",
-    "commlost_end": "Сигнал ОК",
-    "onbatt": "-> Батарея",
-    "onbatt_end": "<- Батарея",
-    "offline": "Нет сети",
-    "online": "В сети",
-    "line_ok": "Сеть ОК",
-    "trim": "Высок напр",
-    "boost": "Низк напр",
-    "overload": "Перегрузка",
-    "overload_end": "Нагрузка ОК",
-    "nobatt": "Нет батареи",
-    "nobatt_end": "Батарея ОК",
-    "turned_on": "Включен",
-    "turned_off": "Выключен",
-};
-
-const signalMap = {
-    'powerout': 'Сбой в сети',
-    'mainsback': 'В сети',
-    'startselftest': 'Тест',
-    'endselftest': 'Тест пройден',
-};
-
-const flagSignals = {
-    'powerout': 1,
-    'startselftest': 1,
-};
-
-const eventSignals = {
-    'powerout': 1,
-    'startselftest': 1,
-    'endselftest': 1,
-};
 
 export default class Model {
     constructor(options = {}) {
@@ -61,6 +15,11 @@ export default class Model {
             websocketUri: 'ws://localhost:8001/ws',
             reinitInterval: 60 * 1000,
             eventLimit: 7,
+            eventSignalsEnabled: {
+                [SignalType.POWEROUT]: 1,
+                [SignalType.STARTSELFTEST]: 1,
+                [SignalType.ENDSELFTEST]: 1,
+            },
         }, options);
 
         this.data = {
@@ -162,6 +121,22 @@ export default class Model {
      * @param {Boolean} forceUpdate
      */
     updateEvents(events = [], resetEvents = false, forceUpdate = false) {
+        console.log('Events', events);
+
+        if (events.length == 0 && !resetEvents && !forceUpdate) {
+            return;
+        }
+        this.data.events = (resetEvents ? [] : this.data.events)
+            .concat(events)
+            .filter(event => {
+                if (event.Type == EventType.SIGNAL) {
+                    let data = event.Data || {};
+                    return data.signal in this.opts.eventSignalsEnabled;
+                }
+                return true;
+            })
+            .slice(-this.opts.eventLimit)
+        ;
     }
 
     handleSignal(type) {
