@@ -9,9 +9,14 @@
     /*background-color: #3f51b5;*/
     background-color: #121c4e;
 }
+.ups--status-online.ups--status-signal_disconnect {
+    background-color: initial;
+}
 
 .ups--alert,
-.ups--status-onbatt {
+.ups--status-onbatt,
+.ups--status-signal_powerout,
+.ups--status-signal_onbattery {
     background-color: #660000;
 }
 
@@ -54,7 +59,10 @@
 .ups__status-flag--off,
 .ups__status-flag--trim,
 .ups__status-flag--boost,
-.ups__status-flag--replacebatt {
+.ups__status-flag--replacebatt,
+.ups__status-flag--signal_disconnect,
+.ups__status-flag--signal_powerout,
+.ups__status-flag--signal_startselftest {
     color: #FFCC00;
 }
 

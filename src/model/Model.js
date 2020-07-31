@@ -20,6 +20,13 @@ export default class Model {
                 [SignalType.STARTSELFTEST]: 1,
                 [SignalType.ENDSELFTEST]: 1,
             },
+            signalsEnabled: {
+                [SignalType.POWEROUT]: {},
+                [SignalType.MAINSBACK]: {hidden: true},
+                [SignalType.STARTSELFTEST]: {},
+                [SignalType.ENDSELFTEST]: {hidden: true},
+                [SignalType.DISCONNECT]: {},
+            },
         }, options);
 
         this.data = {
@@ -56,11 +63,11 @@ export default class Model {
     }
 
     onConnect(e) {
-    //  $cont.removeClass(opts.cssClasses.containerUpsDiconnected);
+        this.handleSignal(SignalType.CONNECT);
     }
 
     onDiconnect() {
-        this.handleSignal("disconnect");
+        this.handleSignal(SignalType.DISCONNECT);
     }
 
     onConnData(msgData = {}) {
@@ -101,15 +108,21 @@ export default class Model {
      */
     updateState(diff) {
         this.data.state = Object.assign({}, this.data.state, diff);
-        if (diff.UpsStatus && diff.UpsStatus.Flag != null) {
-            this.updateStatus(diff.UpsStatus.Flag);
+        if (diff.UpsStatus) {
+            this.updateStatus();
         }
     }
 
     /**
-     * @param {Number} flag
+     * @param {Number|null} flag
      */
-    updateStatus(flag) {
+    updateStatus(flag = null) {
+        if (flag == null) {
+            flag = (this.data.state.UpsStatus || {}).Flag;
+        }
+        if (flag == null) {
+            return;
+        }
         this.data.statusFlags = StatusFlag.typesFromStatus(flag).map(
             type => new StatusFlag(type, [type])
         );
@@ -121,8 +134,6 @@ export default class Model {
      * @param {Boolean} forceUpdate
      */
     updateEvents(events = [], resetEvents = false, forceUpdate = false) {
-        console.log('Events', events);
-
         if (events.length == 0 && !resetEvents && !forceUpdate) {
             return;
         }
@@ -140,5 +151,17 @@ export default class Model {
     }
 
     handleSignal(type) {
+        this.updateStatus();
+
+        if (type in this.opts.signalsEnabled) {
+            let flagType = `signal_${type}`;
+            let flag = new StatusFlag(flagType, [flagType]);
+
+            let props = this.opts.signalsEnabled[type];
+            props = (typeof props == "object") ? props || {} : {};
+            Object.assign(flag, props);
+
+            this.data.statusFlags.push(flag);
+        }
     }
 }

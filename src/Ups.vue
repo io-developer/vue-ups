@@ -69,7 +69,7 @@
 			<div class="ups-layout__left">
 
 				<div class="ups__status">
-					<StatusFlag v-for="(flag, index) in statusFlags" :key="index"
+					<StatusFlag v-for="(flag, index) in statusFlags.filter(flag => !flag.hidden)" :key="index"
 						:title="flag.type"
 						:tags="flag.tags"
 					/>

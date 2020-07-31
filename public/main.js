@@ -9,7 +9,8 @@ new Vue({
         //  mode: 'test',
             locale: 'ru_RU',
             modelOptions: {
-                websocketUri: 'ws://home-nas.iodev:3560/ws',
+            //  websocketUri: 'ws://home-nas.iodev:3560/ws',
+                websocketUri: 'ws://localhost:8001/ws',
                 reinitInterval: 300 * 1000,
                 eventLimit: 20,
             },

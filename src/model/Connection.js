@@ -68,14 +68,14 @@ export default class Connection {
 		if (this.onError) {
 			this.onError(e);
 		}
-		wsOnDisconnect();
+		this.wsOnDisconnect();
 	}
 
 	wsOnClose(e) {
 		if (this.onClose) {
 			this.onClose(e);
 		}
-		wsOnDisconnect();
+		this.wsOnDisconnect();
 	}
 
 	wsOnDisconnect() {

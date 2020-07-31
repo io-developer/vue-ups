@@ -39,5 +39,6 @@ export default class StatusFlag {
     constructor(type, tags = []) {
         this.type = type;
         this.tags = tags;
+        this.hidden = false;
     }
 }

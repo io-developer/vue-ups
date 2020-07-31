@@ -15,4 +15,8 @@ export default {
     DOSHUTDOWN: "doshutdown",
     ANNOYME: "annoyme",
     REMOTEDOWN: "remotedown",
+
+    // Non-standard types for Vue component
+    CONNECT: "connect",
+    DISCONNECT: "disconnect",
 };
