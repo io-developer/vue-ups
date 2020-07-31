@@ -25,9 +25,6 @@
 			staticClass: {
 				default: '',
 			},
-			locale: {
-				default: 'en_US',
-			},
 			mode: {
 				default: null,
 			},
@@ -70,7 +67,7 @@
 
 				<div class="ups__status">
 					<StatusFlag v-for="(flag, index) in statusFlags.filter(flag => !flag.hidden)" :key="index"
-						:title="flag.type"
+						:type="flag.type"
 						:tags="flag.tags"
 					/>
 				</div>

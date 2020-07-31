@@ -34,6 +34,7 @@
     };
 </script>
 
+
 <template>
     <span>{{ getText() }}</span>
 </template>

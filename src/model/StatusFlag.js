@@ -15,6 +15,9 @@ export default class StatusFlag {
     static REPLACEBATT = "replacebatt"
     static NOBATT = "nobatt"
     static SHUTDOWN = "shutdown"
+
+    // Also can wrap signal types: "signal_{SignalType}"
+
     /* jshint ignore:end */
 
     static typesFromStatus(flags) {

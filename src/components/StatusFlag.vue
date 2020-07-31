@@ -3,8 +3,8 @@
         name: "StatusFlag",
         data: () => ({}),
         props: {
-            title: {
-                default: "N/A",
+            type: {
+                default: "",
             },
             tags: {
                 default: [],
@@ -23,5 +23,5 @@
 </script>
 
 <template>
-    <span class="ups__status-flag" :class="getTagClasses()">{{ title }}</span>
+    <span class="ups__status-flag" :class="getTagClasses()">{{ $t(`Ups.StatusFlag.${type}`) }}</span>
 </template>

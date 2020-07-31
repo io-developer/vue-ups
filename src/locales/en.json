@@ -1,3 +1,87 @@
 {
-    "Ups": {}
+    "Ups": {
+        "StatusFlag": {
+            "comlost": "Comm lost",
+            "online": "Online",
+            "onbatt": "On battery",
+            "off": "Off",
+            "calibration": "Calibration",
+            "trim": "Trim",
+            "boost": "Boost",
+            "overload": "Overload",
+            "lowbatt": "Low battery",
+            "replacebatt": "Replace battery",
+            "nobatt": "No battery",
+            "shutdown": "Shutdown",
+
+            "signal_commfailure": "Comm failure",
+            "signal_commok": "Comm OK",
+            "signal_startselftest": "Selftest",
+            "signal_endselftest": "Selftest end",
+            "signal_powerout": "Power out",
+            "signal_mainsback": "Mains back",
+            "signal_onbattery": "On battery",
+            "signal_offbattery": "Off battery",
+            "signal_battattach": "Batt attach",
+            "signal_changeme": "Change me",
+            "signal_failing": "Failing",
+            "signal_timeout": "Timeout",
+            "signal_loadlimit": "Load limit",
+            "signal_doshutdown": "Do shutdown",
+            "signal_annoyme": "Annoy me",
+            "signal_remotedown": "Remote down",
+
+            "signal_connect": "Connected",
+            "signal_disconnect": "Reconnecting…"
+        },
+        "Event": {
+            "commlost": "Comm lost",
+            "commlost_end": "Comm OK",
+            "onbatt": "-> Battery",
+            "onbatt_end": "<- Battery",
+            "offline": "Offline",
+            "online": "Online",
+            "line_ok": "Line OK",
+            "trim": "Trim",
+            "boost": "Boost",
+            "overload": "Overload",
+            "overload_end": "Overload OK",
+            "nobatt": "No battery",
+            "nobatt_end": "Battery OK",
+            "turned_on": "Turned ON",
+            "turned_off": "Turned OFF"
+        },
+        "Signal": {
+            "commfailure": "Comm failure",
+            "commok": "Comm OK",
+            "startselftest": "Selftest",
+            "endselftest": "Selftest end",
+            "powerout": "Power out",
+            "mainsback": "Mains back",
+            "onbattery": "On battery",
+            "offbattery": "Off battery",
+            "battattach": "Batt attach",
+            "changeme": "Change me",
+            "failing": "Failing",
+            "timeout": "Timeout",
+            "loadlimit": "Load limit",
+            "doshutdown": "Do shutdown",
+            "annoyme": "Annoy me",
+            "remotedown": "Remote down",
+
+            "connect": "Connected",
+            "disconnect": "Disconnected"
+        },
+        "TransferOnbatteryReason": {
+            "1": "No transfers since turnon",
+            "2": "Automatic or explicit self test",
+            "3": "Forced by software",
+            "4": "Low line voltage",
+            "5": "High line voltage",
+            "6": "Unacceptable line voltage changes",
+            "7": "Line voltage notch or spike",
+            "8": "Input frequency out of range",
+            "9": "UNKNOWN EVENT"
+        }
+    }
 }
