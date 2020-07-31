@@ -11,8 +11,17 @@ import WsMsgSignalSchema from './schema/WsMsgSignal';
 
 export default class Model {
     constructor(options = {}) {
+        // clean empty keys
+		Object.entries(options).forEach(([k, v]) => {
+			if (v === undefined) {
+				delete options[k];
+			}
+        });
+
         this.opts = Object.assign({
             websocketUri: 'ws://localhost:8001/ws',
+            websocketReconnect: true,
+            websocketReconnectInterval: true,
             reinitInterval: 60 * 1000,
             eventLimit: 7,
             eventSignalsEnabled: {
@@ -120,12 +129,8 @@ export default class Model {
         if (flag == null) {
             flag = (this.data.state.UpsStatus || {}).Flag;
         }
-        if (flag == null) {
-            return;
-        }
-        this.data.statusFlags = StatusFlag.typesFromStatus(flag).map(
-            type => new StatusFlag(type, [type])
-        );
+        let types = flag != null ? StatusFlag.typesFromStatus(flag) : [];
+        this.data.statusFlags = types.map(type => new StatusFlag(type, [type]));
     }
 
     /**
