@@ -25,6 +25,9 @@
 			staticClass: {
 				default: '',
 			},
+			title: {
+				default: '',
+			},
 			mode: {
 				default: null,
 			},
@@ -61,7 +64,7 @@
 
 <template>
 
-	<div class="ups" :class="getRootClass()" title="Питание" >
+	<div class="ups" :class="getRootClass()" :title="title" >
 		<div class="ups-layout">
 			<div class="ups-layout__left">
 
