@@ -211,7 +211,7 @@
     font-weight: 400;
 }
 
-.ups__indicator-value:after {
+.ups__indicator-value-unit {
     margin-left: 0.2em;
     font-size: 12px;
     font-weight: 300;
@@ -237,34 +237,19 @@
 .ups__indicator--battery-charge .ups__indicator-icon {
     background-image: url('./assets/icons/charge-100.svg');
 }
-.ups__indicator--battery-charge .ups__indicator-value:after {
-    content: "%";
-}
 
 .ups__indicator--output-voltage .ups__indicator-icon {
     background-image: url('./assets/icons/sinusoid.svg');
-}
-.ups__indicator--output-voltage .ups__indicator-value:after {
-    content: "В";
 }
 
 .ups__indicator--input-voltage .ups__indicator-icon {
     background-image: url('./assets/icons/plug.svg');
 }
-.ups__indicator--input-voltage .ups__indicator-value:after {
-    content: "В";
-}
 
 .ups__indicator--output-load .ups__indicator-icon {
     background-image: url('./assets/icons/load.svg');
 }
-.ups__indicator--output-load .ups__indicator-value:after {
-    content: "%";
-}
 
 .ups__indicator--temp .ups__indicator-icon {
     background-image: url('./assets/icons/temp.svg');
-}
-.ups__indicator--temp .ups__indicator-value:after {
-    content: "°C";
 }

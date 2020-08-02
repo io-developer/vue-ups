@@ -6,6 +6,10 @@
             "minutes": "min",
             "seconds": "sec"
         },
+        "Unit": {
+            "Volt": "V",
+            "Celsius": "°C"
+        },
         "StatusFlag": {
             "comlost": "Comm lost",
             "online": "Online",

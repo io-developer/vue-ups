@@ -6,6 +6,10 @@
             "minutes": "мин",
             "seconds": "сек"
         },
+        "Unit": {
+            "Volt": "В",
+            "Celsius": "°C"
+        },
         "StatusFlag": {
             "comlost": "Нет сигнала",
             "online": "Сеть",
@@ -22,8 +26,8 @@
 
             "signal_commfailure": "Нет сигнала",
             "signal_commok": "Сигнал ОК",
-            "signal_startselftest": "Тест",
-            "signal_endselftest": "Тест пройден",
+            "signal_startselftest": "Диагностика",
+            "signal_endselftest": "Диагностика закончена",
             "signal_powerout": "Сбой в сети",
             "signal_mainsback": "В сети",
             "signal_onbattery": "На батарее",
@@ -60,8 +64,8 @@
         "Signal": {
             "commfailure": "Нет сигнала",
             "commok": "Сигнал ОК",
-            "startselftest": "Тест",
-            "endselftest": "Тест пройден",
+            "startselftest": "Диагностика",
+            "endselftest": "Диагностика закончена",
             "powerout": "Сбой в сети",
             "mainsback": "В сети",
             "onbattery": "На батарее",

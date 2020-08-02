@@ -90,7 +90,9 @@
 					<i class="ups__indicator-icon"></i>
 					<div class="ups__indicator-value-group">
 						<p class="ups__indicator-value">
-							<Decimal :value="state.BatteryCharge"/>
+							<Decimal
+								:value="state.BatteryCharge"
+							/><span class="ups__indicator-value-unit">%</span>
 						</p>
 						<p class="ups__indicator-value ups__indicator-value--small">
 							<Duration :seconds="state.UpsTimeleftSeconds" :showSeconds="false"/>
@@ -101,21 +103,27 @@
 				<div class="ups__indicator ups__indicator--input-voltage">
 					<i class="ups__indicator-icon"></i>
 					<p class="ups__indicator-value">
-						<Decimal :value="state.InputVoltage"/>
+						<Decimal
+							:value="state.InputVoltage"
+						/><span class="ups__indicator-value-unit">{{ $t(`Ups.Unit.Volt`) }}</span>
 					</p>
 				</div>
 
 				<div class="ups__indicator ups__indicator--output-load">
 					<i class="ups__indicator-icon"></i>
 					<p class="ups__indicator-value">
-						<Decimal :value="state.OutputLoad"/>
+						<Decimal
+							:value="state.OutputLoad"
+						/><span class="ups__indicator-value-unit">%</span>
 					</p>
 				</div>
 
 				<div class="ups__indicator ups__indicator--temp">
 					<i class="ups__indicator-icon"></i>
 					<p class="ups__indicator-value">
-						<Decimal :value="state.UpsTempInternal"/>
+						<Decimal
+							:value="state.UpsTempInternal"
+						/><span class="ups__indicator-value-unit">{{ $t(`Ups.Unit.Celsius`) }}</span>
 					</p>
 				</div>
 
