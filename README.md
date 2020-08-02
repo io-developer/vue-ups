@@ -22,7 +22,7 @@ Component supports:
 
 ![Widget](example/in-action.gif "in-action")
 
-## Locales in Demo mode
+## Demo mode
 
 Online [EN]:
 
