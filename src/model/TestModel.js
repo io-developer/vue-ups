@@ -77,9 +77,13 @@ export default class TestModel {
 
             /** @type {StatusFlag[]} */
             statusFlags: [
-                new StatusFlag(StatusFlag.ONLINE, ["online"]),
-                new StatusFlag(StatusFlag.OVERLOAD, ["overload", "alert"]),
-                new StatusFlag("selftest", ["warn"]),
+                new StatusFlag(StatusFlag.ONLINE, [StatusFlag.ONLINE]),
+                new StatusFlag(StatusFlag.BOOST, [StatusFlag.BOOST]),
+                new StatusFlag(StatusFlag.OVERLOAD, [StatusFlag.OVERLOAD]),
+                new StatusFlag(StatusFlag.LOWBATT, [StatusFlag.LOWBATT]),
+                new StatusFlag(StatusFlag.REPLACEBATT, [StatusFlag.REPLACEBATT]),
+                new StatusFlag("signal_startselftest", ["signal_startselftest"]),
+                new StatusFlag("signal_endselftest", ["signal_endselftest"]),
             ],
         };
     }

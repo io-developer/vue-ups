@@ -11,7 +11,13 @@
             },
         },
         methods: {
-            getTagClasses: function() {
+            isSignal() {
+                return !!("" + this.type).match(/^signal_/);
+            },
+            getSignalType() {
+                return ("" + this.type).replace(/^signal_/, "");
+            },
+            getTagClasses() {
                 let classMap = {};
                 (this.tags || []).forEach(tag => {
                     classMap["ups__status-flag--" + tag] = true;
@@ -23,5 +29,7 @@
 </script>
 
 <template>
-    <span class="ups__status-flag" :class="getTagClasses()">{{ $t(`Ups.StatusFlag.${type}`) }}</span>
+    <span class="ups__status-flag" :class="getTagClasses()">{{
+        isSignal() ? $t(`Ups.Signal.${getSignalType()}`) : $t(`Ups.StatusFlag.${type}`)
+    }}</span>
 </template>

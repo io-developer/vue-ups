@@ -23,12 +23,11 @@ new Vue({
         props: {
             staticClass: 'block block--bg',
             title: "Line",
-        //  mode: 'test',
+            mode: 'test',
             modelOptions: {
             //  websocketUri: 'ws://home-nas.iodev:3560/ws',
-                websocketUri: 'ws://localhost:8001/ws',
                 reinitInterval: 300 * 1000,
-                eventLimit: 20,
+                eventLimit: 7,
             },
         },
     }),
