@@ -2,7 +2,7 @@
 
 <script>
 	import Model from "./model/Model";
-	import TestModel from "./model/TestModel";
+	import ModelDemo from "./model/ModelDemo";
 	import StatusFlag from "./model/StatusFlag";
 	import EventComponent from "./components/Event";
 	import StatusFlagComponent from "./components/StatusFlag";
@@ -39,8 +39,8 @@
 			if (model) {
 				model.destroy();
 			}
-			model = this.mode == 'test'
-				? new TestModel(this.modelOptions)
+			model = this.mode == 'demo'
+				? new ModelDemo(this.modelOptions)
 				: new Model(this.modelOptions)
 			;
 			return model.getData();

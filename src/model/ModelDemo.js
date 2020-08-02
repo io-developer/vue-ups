@@ -1,8 +1,10 @@
 import StatusFlag from './StatusFlag';
 import EventSchema from './schema/Event';
+import EventType from './schema/EventType';
 import StateSchema from './schema/State';
+import SignalType from './schema/SignalType';
 
-export default class TestModel {
+export default class ModelDemo {
     constructor(options = {}) {
     }
 
@@ -17,15 +19,14 @@ export default class TestModel {
                 UpsStatus: {
                     Flag: 0xFFFFFFFF,
                 },
-                BatteryCharge: 97.3,
-                UpsTimeleftSeconds: 123456,
-                InputVoltage: 227.123,
+                BatteryCharge: 3.0,
+                UpsTimeleftSeconds: 1 * 3600 + 7 * 60,
+                InputVoltage: 227.5,
                 InputVoltageMin: 221.456,
                 InputVoltageMax: 231.789,
-                OutputVoltage: 227.147,
-                OutputLoad: 7.753,
-                UpsTempInternal: 27.84,
-                UpsTransferOnBatteryDate: (new Date("2020-07-30T13:49:37")).getTime() * 0.001,
+                OutputVoltage: 227.9,
+                OutputLoad: 93.753,
+                UpsTempInternal: 31.6,
                 UpsTransferOnBatteryReason: 2,
                 UpsOnBatterySeconds: 456,
             },
@@ -34,43 +35,40 @@ export default class TestModel {
             events: [
                 {
                     Ts: "2020-07-25T00:00:00",
-                    Type: "signal",
-                    Data: {
-                        signal: this.staticClass,
-                    },
+                    Type: EventType.COMMLOST_END,
                 },
                 {
                     Ts: "2020-07-25T00:00:00",
                     Type: "signal",
                     Data: {
-                        signal: "powerout",
+                        signal: SignalType.POWEROUT,
                     },
                 },
                 {
                     Ts: "2020-07-25T00:00:01",
-                    Type: "onbatt",
+                    Type: EventType.ONBATT,
                     Data: {
                         reason_type: 7,
                     },
                 },
                 {
-                    Ts: "2020-07-25T00:23:37",
-                    Type: "onbatt_end",
+                    Ts: new Date((new Date()).getTime() - 3*3600*1000 - 10),
+                    Type: EventType.ONBATT_END,
                     Data: {
                         ts_start: "2020-07-25T00:00:01",
-                        ts_end: "2020-07-25T00:23:37",
+                        ts_end: new Date((new Date()).getTime() - 3*3600*1000 - 10),
                     },
                 },
                 {
-                    Ts: "2020-07-25T00:23:38",
+                    Ts: new Date((new Date()).getTime() - 3*3600*1000),
                     Type: "turned_off",
                 },
                 {
-                    Ts: "2020-07-25T01:17:32",
+                    Ts: new Date((new Date()).getTime() - 300*1000),
                     Type: "turned_on",
                 },
                 {
-                    Ts: "2020-07-27T13:51:43",
+                    Ts: new Date(),
                     Type: "line_ok",
                 },
             ],
@@ -78,12 +76,9 @@ export default class TestModel {
             /** @type {StatusFlag[]} */
             statusFlags: [
                 new StatusFlag(StatusFlag.ONLINE, [StatusFlag.ONLINE]),
-                new StatusFlag(StatusFlag.BOOST, [StatusFlag.BOOST]),
+                new StatusFlag("__demomode__"),
                 new StatusFlag(StatusFlag.OVERLOAD, [StatusFlag.OVERLOAD]),
                 new StatusFlag(StatusFlag.LOWBATT, [StatusFlag.LOWBATT]),
-                new StatusFlag(StatusFlag.REPLACEBATT, [StatusFlag.REPLACEBATT]),
-                new StatusFlag("signal_startselftest", ["signal_startselftest"]),
-                new StatusFlag("signal_endselftest", ["signal_endselftest"]),
             ],
         };
     }

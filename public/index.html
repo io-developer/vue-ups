@@ -54,16 +54,16 @@
             props: {
                 staticClass: 'block block--bg',
                 title: "Line",
-                mode: 'test',
+            //  mode: null,
+              mode: 'demo',
                 modelOptions: {
+                    websocketUri: 'ws://localhost:8001/ws',
                 //  websocketUri: 'ws://home-nas.iodev:3560/ws',
-                    reinitInterval: 300 * 1000,
-                    eventLimit: 7,
+                //  reinitInterval: 300 * 1000,
+                //  eventLimit: 7,
                 },
             },
         });
-        console.log("Vue", Vue);
-        console.log("VueI18n", VueI18n);
     </script>
 </body>
 </html>

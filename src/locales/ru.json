@@ -11,6 +11,8 @@
             "Celsius": "°C"
         },
         "StatusFlag": {
+            "__demomode__": "** ДЕМО РЕЖИМ **",
+
             "comlost": "Нет сигнала",
             "online": "Сеть",
             "onbatt": "На батарее",
@@ -45,7 +47,7 @@
             "commfailure": "Нет сигнала…",
             "commok": "Сигнал ОК…",
             "startselftest": "Диагностика…",
-            "endselftest": "Продиагностировано…",
+            "endselftest": "Диагностика завершена…",
             "powerout": "Сбой в сети…",
             "mainsback": "В сети…",
             "onbattery": "На батарее…",

@@ -11,6 +11,8 @@
             "Celsius": "°C"
         },
         "StatusFlag": {
+            "__demomode__": "** DEMO MODE **",
+
             "comlost": "Comm lost",
             "online": "Online",
             "onbatt": "On battery",
@@ -25,8 +27,8 @@
             "shutdown": "Shutdown"
         },
         "Event": {
-            "commlost": "Comm lost",
-            "commlost_end": "Comm OK",
+            "commlost": "Communication lost",
+            "commlost_end": "Communication OK",
             "onbatt": "-> Battery",
             "onbatt_end": "<- Battery",
             "offline": "Offline",
@@ -42,8 +44,8 @@
             "turned_off": "Turned OFF"
         },
         "Signal": {
-            "commfailure": "Comm failure…",
-            "commok": "Comm OK…",
+            "commfailure": "Communication failure…",
+            "commok": "Communication OK…",
             "startselftest": "Selftest…",
             "endselftest": "Selftested…",
             "powerout": "Power out…",
