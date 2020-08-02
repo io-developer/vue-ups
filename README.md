@@ -14,7 +14,7 @@ Please see `public/index.html`.
 
 Component supports:
 
-* Locale: en, ru
+* Locale: **en**, **ru**
 * Demo mode
 * Websocket, timeouts and etc.
 
@@ -25,13 +25,9 @@ Component supports:
 ## Locales in Demo mode
 
 Online [EN]:
+
 ![demo-online-en](example/demo-online-en.png)
 
-Online [RU]:
-![demo-online-ru](example/demo-online-ru.png)
-
 On battery [EN]:
-![demo-onbatt-en](example/demo-onbatt-en.png)
 
-On battery [RU]:
-![demo-onbatt-ru](example/demo-onbatt-ru.png)
+![demo-onbatt-en](example/demo-onbatt-en.png)
