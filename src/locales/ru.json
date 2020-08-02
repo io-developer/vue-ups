@@ -1,5 +1,11 @@
 {
     "Ups": {
+        "Duration": {
+            "days": "д",
+            "hours": "ч",
+            "minutes": "мин",
+            "seconds": "сек"
+        },
         "StatusFlag": {
             "comlost": "Нет сигнала",
             "online": "Сеть",

@@ -5,7 +5,7 @@ import VueFilterDateFormat from '@vuejs-community/vue-filter-date-format';
 import Ups from "../src/Ups";
 import locales from "../src/locales.js";
 
-let locale = 'ru';
+let locale = 'en';
 
 let dateFormatOpts = locale in locales.date ? locales.date[locale] : locales.date.en;
 Vue.use(VueFilterDateFormat, dateFormatOpts);

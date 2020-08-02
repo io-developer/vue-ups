@@ -1,5 +1,11 @@
 {
     "Ups": {
+        "Duration": {
+            "days": "d",
+            "hours": "h",
+            "minutes": "min",
+            "seconds": "sec"
+        },
         "StatusFlag": {
             "comlost": "Comm lost",
             "online": "Online",
