@@ -39,9 +39,31 @@
             background-color: #161616;
         }
     </style>
+
+    <script src="https://unpkg.com/vue/dist/vue.js"></script>
+    <script src="https://unpkg.com/vue-i18n/dist/vue-i18n.js"></script>
+
+    <script src="../dist/bundle.js"></script>
+    <script src="bundle.js"></script>
+
 </head>
 <body>
     <div class="block block--bg" id="ups"></div>
-    <script src="bundle.js"></script>
+    <script>
+        window.iodev.VueUps.create(Vue, VueI18n, "#ups", 'en', {
+            props: {
+                staticClass: 'block block--bg',
+                title: "Line",
+                mode: 'test',
+                modelOptions: {
+                //  websocketUri: 'ws://home-nas.iodev:3560/ws',
+                    reinitInterval: 300 * 1000,
+                    eventLimit: 7,
+                },
+            },
+        });
+        console.log("Vue", Vue);
+        console.log("VueI18n", VueI18n);
+    </script>
 </body>
 </html>
